@@ -1,0 +1,58 @@
+{
+    "intents": [
+      {
+        "tag": "saludo",
+        "patterns": ["Hola", "¿Cómo estás?", "Hey", "Hola, ¿qué tal?"],
+        "responses": ["Hola, ¿cómo te sientes hoy?", "¡Hola! Estoy aquí para escucharte."]
+      },
+      {
+        "tag": "tristeza",
+        "patterns": ["Me siento triste", "No tengo ganas de hacer nada", "Estoy deprimido"],
+        "responses": [
+          "Lamento que te sientas así. ¿Quieres hablar de lo que te preocupa?",
+          "Estoy aquí para apoyarte. A veces hablar ayuda mucho."
+        ]
+      },
+      {
+        "tag": "ansiedad",
+        "patterns": ["Estoy ansioso", "Tengo miedo", "No puedo dejar de pensar en lo malo"],
+        "responses": [
+          "Respira hondo. ¿Quieres que hablemos de lo que te preocupa?",
+          "La ansiedad puede ser difícil, pero recuerda que no estás solo."
+        ]
+      },
+      {
+        "tag": "felicidad",
+        "patterns": ["Estoy feliz", "Hoy me fue muy bien", "Tengo buenas noticias"],
+        "responses": [
+          "¡Eso es genial! Cuéntame más sobre lo que te hizo feliz.",
+          "Me alegra saberlo. ¡Disfruta el momento!"
+        ]
+      },
+      {
+        "tag": "estrés",
+        "patterns": ["Tengo mucho que hacer", "Estoy estresado", "No puedo con todo"],
+        "responses": [
+          "Es normal sentirse abrumado a veces. ¿Has intentado hacer una lista de prioridades?",
+          "Tal vez un descanso te ayude a organizar mejor tu tiempo."
+        ]
+      },
+      {
+        "tag": "soledad",
+        "patterns": ["Me siento solo", "No tengo con quién hablar", "No encajo"],
+        "responses": [
+          "Lamento que te sientas así. A veces, hablar con alguien puede ayudar.",
+          "Si quieres, podemos hablar un rato. No estás solo."
+        ]
+      },
+      {
+        "tag": "motivacion",
+        "patterns": ["Necesito motivación", "Siento que no puedo más", "Quiero rendirme"],
+        "responses": [
+          "Eres más fuerte de lo que crees. Cada paso cuenta.",
+          "No estás solo en esto. ¿Cómo puedo ayudarte?"
+        ]
+      }
+    ]
+  }
+  
