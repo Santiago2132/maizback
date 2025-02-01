@@ -37,3 +37,4 @@ if __name__ == "__main__":
             break
         emotion = predict_emotion(user_text)
         print(f"😃 Emoción detectada: {emotion}")
+'''🐢SA'''
