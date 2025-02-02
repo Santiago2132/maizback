@@ -4,9 +4,9 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Cargar modelos y recursos
-model = joblib.load("ai/emotion_model.pkl")
-vectorizer = joblib.load("ai/vectorizer.pkl")
-label_classes = np.load("ai/label_encoder_classes.npy", allow_pickle=True)
+model = joblib.load("ai/models/emotion_model.pkl")
+vectorizer = joblib.load("ai/models/vectorizer.pkl")
+label_classes = np.load("ai/models/label_encoder_classes.npy", allow_pickle=True)
 
 # Cargar respuestas predefinidas desde intents.json
 with open("ai/data/intents.json", "r", encoding="utf-8") as f:
