@@ -1,58 +1,164 @@
 {
-    "intents": [
+  "intents": [
       {
-        "tag": "saludo",
-        "patterns": ["Hola", "¿Cómo estás?", "Hey", "Hola, ¿qué tal?"],
-        "responses": ["Hola, ¿cómo te sientes hoy?", "¡Hola! Estoy aquí para escucharte."]
+          "tag": "saludo",
+          "patterns": ["Hola", "¿Cómo estás?", "Hey", "Hola, ¿qué tal?", "Buenos días", "Buenas tardes", "¿Qué pasa?", "¿Cómo te va?"],
+          "responses": [
+              "Hola, ¿cómo te sientes hoy? Estoy aquí para escuchar y ayudar.",
+              "¡Hola! Espero que estés teniendo un buen día. Cuéntame, ¿qué sucede en tu vida?"
+          ]
       },
       {
-        "tag": "tristeza",
-        "patterns": ["Me siento triste", "No tengo ganas de hacer nada", "Estoy deprimido"],
-        "responses": [
-          "Lamento que te sientas así. ¿Quieres hablar de lo que te preocupa?",
-          "Estoy aquí para apoyarte. A veces hablar ayuda mucho."
-        ]
+          "tag": "tristeza",
+          "patterns": ["Me siento triste", "No tengo ganas de hacer nada", "Estoy deprimido", "Siento una gran melancolía", "No encuentro alegría en nada"],
+          "responses": [
+              "Lamento que te sientas así. A veces es útil compartir lo que pesa en tu corazón. ¿Qué está causando esta tristeza?",
+              "Estoy aquí para apoyarte. Hablar puede ser un primer paso para aliviar esa carga. ¿Hay algo específico que quieras abordar?"
+          ]
       },
       {
-        "tag": "ansiedad",
-        "patterns": ["Estoy ansioso", "Tengo miedo", "No puedo dejar de pensar en lo malo"],
-        "responses": [
-          "Respira hondo. ¿Quieres que hablemos de lo que te preocupa?",
-          "La ansiedad puede ser difícil, pero recuerda que no estás solo."
-        ]
+          "tag": "ansiedad",
+          "patterns": ["Estoy ansioso", "Tengo miedo", "No puedo dejar de pensar en lo malo", "Siento que todo podría salir mal", "Mi mente no se detiene"],
+          "responses": [
+              "Respira hondo. ¿Te gustaría compartir qué es lo que más te preocupa? A veces, externar esos pensamientos nos brinda claridad.",
+              "La ansiedad puede resultar abrumadora. Recuerda que es una respuesta natural del cuerpo. A menudo, hablar de ello puede aliviar la carga."
+          ]
       },
       {
-        "tag": "felicidad",
-        "patterns": ["Estoy feliz", "Hoy me fue muy bien", "Tengo buenas noticias"],
-        "responses": [
-          "¡Eso es genial! Cuéntame más sobre lo que te hizo feliz.",
-          "Me alegra saberlo. ¡Disfruta el momento!"
-        ]
+          "tag": "felicidad",
+          "patterns": ["Estoy feliz", "Hoy me fue muy bien", "Tengo buenas noticias", "Me siento muy contento", "Estoy en una buena etapa"],
+          "responses": [
+              "¡Eso es maravilloso! Cuéntame más sobre lo que te hizo sentir así. Celebrar los momentos felices es importante.",
+              "Me alegra saber que te sientes bien. La felicidad es un gran motivador. ¿Cómo piensas mantener esos sentimientos positivos?"
+          ]
       },
       {
-        "tag": "estrés",
-        "patterns": ["Tengo mucho que hacer", "Estoy estresado", "No puedo con todo"],
-        "responses": [
-          "Es normal sentirse abrumado a veces. ¿Has intentado hacer una lista de prioridades?",
-          "Tal vez un descanso te ayude a organizar mejor tu tiempo."
-        ]
+          "tag": "estrés",
+          "patterns": ["Tengo mucho que hacer", "Estoy estresado", "No puedo con todo", "Siento que el tiempo no me alcanza", "Me siento sobrecargado"],
+          "responses": [
+              "Es normal sentirse abrumado a veces. Considera tomar un momento para organizar tus pensamientos. ¿Has intentado desglosar tus tareas?",
+              "Un poco de estrés puede ser motivador, pero demasiado puede ser perjudicial. ¿Qué crees que te ayudaría a sentirte más en control?"
+          ]
       },
       {
-        "tag": "soledad",
-        "patterns": ["Me siento solo", "No tengo con quién hablar", "No encajo"],
-        "responses": [
-          "Lamento que te sientas así. A veces, hablar con alguien puede ayudar.",
-          "Si quieres, podemos hablar un rato. No estás solo."
-        ]
+          "tag": "soledad",
+          "patterns": ["Me siento solo", "No tengo con quién hablar", "No encajo", "Siento un vacío", "Nadie me comprende"],
+          "responses": [
+              "Lamento que te sientas así. La soledad puede ser muy difícil de afrontar. ¿Te gustaría hablar sobre lo que sientes?",
+              "No estás solo, y hablar puede ser liberador. ¿Cómo podría acompañarte en este momento?"
+          ]
       },
       {
-        "tag": "motivacion",
-        "patterns": ["Necesito motivación", "Siento que no puedo más", "Quiero rendirme"],
-        "responses": [
-          "Eres más fuerte de lo que crees. Cada paso cuenta.",
-          "No estás solo en esto. ¿Cómo puedo ayudarte?"
-        ]
+          "tag": "motivacion",
+          "patterns": ["Necesito motivación", "Siento que no puedo más", "Quiero rendirme", "No veo un camino adelante", "Necesito un empujón"],
+          "responses": [
+              "Eres más fuerte de lo que crees. Cada paso cuenta y es importante reconocer tu esfuerzo. ¿Qué te gustaría lograr?",
+              "No estás solo en esto. A veces, hablar sobre tus metas puede reavivar tu motivación. ¿Cómo puedo ayudarte a avanzar?"
+          ]
+      },
+      {
+          "tag": "conflicto interno",
+          "patterns": ["No sé qué hacer", "Siento dos cosas a la vez", "Tengo miedo y esperanza", "Estoy confundido sobre mis emociones", "No puedo decidir"],
+          "responses": [
+              "Es normal tener emociones conflictivas. A menudo, estas pueden reflejar deseos y miedos más profundos. ¿Te gustaría explorar juntos lo que sientes?",
+              "El conflicto interno puede ser muy desalentador. A veces, desglosar esos sentimientos puede ayudar a entenderte mejor. ¿Qué parte de ti te gustaría explorar primero?"
+          ]
+      },
+      {
+          "tag": "reflexion",
+          "patterns": ["Quiero reflexionar sobre mi vida", "Siento que necesito un cambio", "Quiero entenderme mejor", "Me siento estancado", "Estoy buscando respuestas"],
+          "responses": [
+              "Reflexionar es un paso crucial en nuestro crecimiento personal. ¿Qué aspectos de tu vida sientes que necesitan atención?",
+              "El deseo de cambio es una señal de que estás en sintonía contigo mismo. ¿Qué es lo que más te gustaría cambiar o mejorar?"
+          ]
+      },
+      {
+          "tag": "frustracion",
+          "patterns": ["Estoy frustrado", "No sé cómo avanzar", "Todo lo que hago parece salir mal", "Estoy muy enojado"],
+          "responses": [
+              "La frustración es una respuesta normal ante obstáculos. ¿Qué parte de tu situación actual es la más desalentadora para ti?",
+              "Reconocer tu frustración es el primer paso para superarla. Hablemos de lo que te está molestando."
+          ]
+      },
+      {
+          "tag": "culpa",
+          "patterns": ["Me siento culpable", "Debí haber hecho algo diferente", "No puedo perdonarme", "Siento culpa por mis decisiones"],
+          "responses": [
+              "Sentir culpa puede ser una carga pesada. ¿Te gustaría hablar sobre lo que sientes que deberías haber hecho de otra manera?",
+              "A veces la culpa es una señal de que valoras tus acciones. Reflexionemos sobre cómo puedes avanzar desde aquí."
+          ]
+      },
+      {
+          "tag": "deber y responsabilidad",
+          "patterns": ["Siento que debo hacerlo todo", "No sé cómo delegar", "Me siento responsable de todos", "Estoy abrumado por las expectativas"],
+          "responses": [
+              "Las expectativas pueden ser abrumadoras. Es importante recordar que no tienes que hacerlo todo tú solo. ¿Qué te impide delegar?",
+              "Hablemos sobre cómo puedes establecer límites saludables en tus responsabilidades y deberes."
+          ]
+      },
+      {
+          "tag": "temor",
+          "patterns": ["Tengo miedo", "Estoy asustado", "No sé cómo afrontar mis temores", "Siento miedo constante"],
+          "responses": [
+              "El miedo es natural y a menudo representa algo importante que necesitamos atender. ¿Te gustaría hablar sobre lo que te asusta?",
+              "Reconocer tus miedos es un paso valiente. A veces, compartirlos puede reducir su poder sobre ti."
+          ]
+      },
+      {
+          "tag": "insatisfaccion",
+          "patterns": ["No me siento satisfecho", "Quiero más en la vida", "Siento que me falta algo", "Estoy desencantado"],
+          "responses": [
+              "La insatisfacción puede ser una señal de que hay algo dentro de ti que necesita ser explorado. ¿Qué crees que te falta?",
+              "Podemos reflexionar sobre tus deseos y aspiraciones. ¿Qué te gustaría cambiar para sentirte más completo?"
+          ]
+      },
+      {
+          "tag": "cambio",
+          "patterns": ["Quiero hacer cambios en mi vida", "Siento que es momento de transformar algo", "Busco nuevas oportunidades", "Estoy en busca de cambios significativos"],
+          "responses": [
+              "El deseo de cambio es un paso emocionante. ¿Qué específicamente te gustaría modificar en tu vida?",
+              "Hacer cambios puede ser aterrador pero liberador. Hablemos sobre tus aspiraciones y cómo podrías empezar."
+          ]
+      },
+      {
+          "tag": "autoestima",
+          "patterns": ["No creo en mí mismo", "Me siento inferior", "No tengo confianza", "Me comparo con los demás"],
+          "responses": [
+              "La autoestima puede ser un desafío para muchos. Es importante recordar que todos tienen su propia valía. ¿Qué piensas que te hace sentir así?",
+              "Reconocer tus habilidades y logros puede ser un paso poderoso. Hablemos sobre lo que valoras de ti mismo."
+          ]
+      },
+      {
+          "tag": "gracias",
+          "patterns": ["Gracias por escucharme", "Aprecio tu ayuda", "Eres un gran apoyo", "Me siento mejor después de hablar"],
+          "responses": [
+              "¡Me alegra saber que te sientes mejor! Siempre estoy aquí para apoyarte.",
+              "Gracias a ti por abrirte. La comunicación es esencial para el bienestar emocional."
+          ]
+      },
+      {
+          "tag": "vulnerabilidad",
+          "patterns": ["Me siento vulnerable", "Estoy expuesto emocionalmente", "No puedo mostrar mis emociones", "Es difícil ser sincero"],
+          "responses": [
+              "Ser vulnerable es un signo de valentía. A menudo, compartir nuestros sentimientos nos acerca a los demás.",
+              "Reconocer nuestra vulnerabilidad puede traer sanación. ¿Te gustaría explorar esto más a fondo?"
+          ]
+      },
+      {
+          "tag": "esperanza",
+          "patterns": ["Siento que hay esperanza", "Quiero creer en un mejor futuro", "Busco la luz en lo oscuro", "Las cosas mejorarán"],
+          "responses": [
+              "La esperanza es un poder transformador. Aferrarse a ella puede ayudar en tiempos difíciles. ¿Qué situación te da esperanza?",
+              "Es inspirador ver tu optimismo. Hablemos sobre cómo puedes cultivar esa esperanza en tu vida diaria."
+          ]
+      },
+      {
+          "tag": "acompanar",
+          "patterns": ["Me gustaría hablar con alguien", "No sé con quién compartir mis preocupaciones", "Busco compañía", "Quiero ser escuchado"],
+          "responses": [
+              "Estoy aquí para ti. Compartir tus pensamientos con alguien puede ser un alivio poderoso. Cuéntame, ¿qué te preocupa?",
+              "La compañía y el apoyo son importantes. Hablemos de lo que sientes; no estás solo."
+          ]
       }
-    ]
-  }
-  
+  ]
+}
