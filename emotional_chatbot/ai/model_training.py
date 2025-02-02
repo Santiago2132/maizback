@@ -47,7 +47,7 @@ def load_and_preprocess_data():
     X = vectorizer.fit_transform(texts)
     
     return X, np.array(encoded_labels), vectorizer, le
-
+'''🐢'''
 def train_emotional_model():
     # Cargar y preparar datos
     X, y, vectorizer, le = load_and_preprocess_data()

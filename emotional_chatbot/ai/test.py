@@ -1,19 +1,22 @@
-# Installa TensorFlow
+import joblib
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-import tensorflow as tf
+# Cargar el modelo y los recursos necesarios
+model = joblib.load("ai/emotion_model.pkl")
+vectorizer = joblib.load("ai/vectorizer.pkl")
+label_classes = np.load("ai/label_encoder_classes.npy", allow_pickle=True)
 
-mnist = tf.keras.datasets.mnist
+def predict_emotion(text):
+    """ Predice la emoción de un texto y devuelve la etiqueta correspondiente. """
+    X_input = vectorizer.transform([text])
+    emotion_index = model.predict(X_input)[0]
+    return label_classes[emotion_index]
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, x_test = x_train / 255.0, x_test / 255.0
-
-model = tf.keras.models.Sequential([
-  tf.keras.layers.Flatten(input_shape=(28, 28)),
-  tf.keras.layers.Dense(128, activation='relu'),
-  tf.keras.layers.Dropout(0.2),
-  tf.keras.layers.Dense(10, activation='softmax')
-])
-
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
+if __name__ == "__main__":
+    while True:
+        user_text = input("Ingrese un texto para probar (o escriba 'salir' para terminar): ")
+        if user_text.lower() in ["salir", "exit", "quit"]:
+            break
+        emotion = predict_emotion(user_text)
+        print(f"🔹 Emoción detectada: {emotion}")
