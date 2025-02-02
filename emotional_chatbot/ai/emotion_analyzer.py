@@ -2,9 +2,9 @@ import joblib
 import numpy as np
 import os
 
-MODEL_PATH = "ai/emotion_model.pkl"
-VECTORIZER_PATH = "ai/vectorizer.pkl"
-ENCODER_PATH = "ai/label_encoder_classes.npy"
+MODEL_PATH = "ai/models/emotion_model.pkl"
+VECTORIZER_PATH = "ai/models/vectorizer.pkl"
+ENCODER_PATH = "ai/models/label_encoder_classes.npy"
 
 def check_model_files():
     """Verifica que los archivos del modelo existen."""
