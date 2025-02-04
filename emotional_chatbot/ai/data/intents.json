@@ -159,6 +159,78 @@
               "Estoy aquí para ti. Compartir tus pensamientos con alguien puede ser un alivio poderoso. Cuéntame, ¿qué te preocupa?",
               "La compañía y el apoyo son importantes. Hablemos de lo que sientes; no estás solo."
           ]
-      }
-  ]
+      },
+      {
+        "tag": "felicidad",
+        "patterns": ["Hoy me siento muy feliz", "Tengo buenas noticias", "Quiero compartir algo que me alegra", "Me siento afortunado"],
+        "responses": [
+            "¡Eso es maravilloso! La felicidad es contagiosa. Cuéntame, ¿qué te ha hecho sentir así?",
+            "¡Qué alegría escuchar eso! Siempre es bueno celebrar los momentos felices. ¿Qué ha pasado?"
+        ]
+        },
+        {
+            "tag": "tristeza",
+            "patterns": ["Me siento triste", "No sé por qué estoy así", "Todo me pesa", "Quiero llorar"],
+            "responses": [
+                "Lamento que te sientas así. A veces, compartir lo que sentimos puede ayudar. Estoy aquí para escucharte.",
+                "Es normal sentirse triste a veces. ¿Te gustaría hablar de lo que te está afectando?"
+            ]
+        },
+        {
+            "tag": "estrés",
+            "patterns": ["Estoy muy estresado", "No puedo manejar la presión", "Siento que todo me abruma", "Necesito un respiro"],
+            "responses": [
+                "El estrés puede ser abrumador. Hablemos de lo que te está causando esa presión. Estoy aquí para ayudarte.",
+                "Tomar un momento para respirar es importante. ¿Qué te está estresando en este momento?"
+            ]
+        },
+        {
+            "tag": "motivación",
+            "patterns": ["Necesito un empujón", "No tengo ganas de hacer nada", "Quiero sentirme motivado", "Busco inspiración"],
+            "responses": [
+                "A veces, todos necesitamos un pequeño empujón. ¿Qué te gustaría lograr hoy?",
+                "La motivación puede ser difícil de encontrar. Hablemos de tus metas y cómo puedo ayudarte a alcanzarlas."
+            ]
+        },
+        {
+            "tag": "soledad",
+            "patterns": ["Me siento solo", "No tengo a nadie con quien hablar", "Busco conexión", "Siento que nadie me entiende"],
+            "responses": [
+                "La soledad puede ser difícil de sobrellevar. Estoy aquí para ti. Cuéntame más sobre cómo te sientes.",
+                "Es importante sentirse conectado. Hablemos de lo que te preocupa y cómo puedo acompañarte."
+            ]
+        },
+        {
+            "tag": "ansiedad",
+            "patterns": ["Siento ansiedad", "No puedo dejar de preocuparme", "Me siento inquieto", "Tengo miedo de lo que viene"],
+            "responses": [
+                "La ansiedad puede ser abrumadora. Estoy aquí para escucharte y ayudarte a encontrar un poco de calma.",
+                "Es normal sentirse ansioso a veces. ¿Te gustaría hablar sobre lo que te está causando esa inquietud?"
+            ]
+        },
+        {
+            "tag": "autoestima",
+            "patterns": ["No me siento bien conmigo mismo", "Dudo de mis capacidades", "Quiero mejorar mi autoestima", "No me valoro lo suficiente"],
+            "responses": [
+                "La autoestima es fundamental. Hablemos de lo que te hace sentir así y cómo podemos trabajar en ello juntos.",
+                "Es importante valorarte. Todos tenemos cualidades únicas. ¿Qué te gustaría mejorar en ti mismo?"
+            ]
+        },
+        {
+            "tag": "relaciones",
+            "patterns": ["Tengo problemas en mis relaciones", "No sé cómo comunicarme", "Busco consejos sobre mis amigos", "Quiero mejorar mi relación"],
+            "responses": [
+                "Las relaciones pueden ser complicadas. Estoy aquí para ayudarte a encontrar soluciones. ¿Qué está pasando?",
+                "La comunicación es clave en cualquier relación. Hablemos de cómo te sientes y qué te gustaría cambiar."
+            ]
+        },
+        {
+            "tag": "cambio",
+            "patterns": ["Estoy pasando por un cambio", "No sé cómo adaptarme", "Siento que todo está cambiando", "Busco estabilidad"],
+            "responses": [
+                "Los cambios pueden ser desafiantes. Estoy aquí para apoyarte en este proceso. ¿Qué tipo de cambio estás enfrentando?",
+                "Adaptarse a los cambios puede ser difícil. Hablemos de cómo te sientes y qué te gustaría lograr."
+            ]
+        }
+    ]
 }
