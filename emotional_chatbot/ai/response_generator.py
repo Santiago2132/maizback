@@ -1,44 +1,32 @@
-import os
 import json
 import joblib
 import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Rutas del modelo
-MODEL_PATH = "ai/models/emotion_model.pipeline"
-ENCODER_PATH = "ai/models/label_encoder.pkl"
-INTENTS_PATH = "ai/data/intents.json"
+# Cargar modelos y recursos
+model = joblib.load("ai/models/emotion_model.pkl")
+vectorizer = joblib.load("ai/models/vectorizer.pkl")
+label_classes = np.load("ai/models/label_encoder_classes.npy", allow_pickle=True)
 
-# Cargar respuestas predefinidas
-if not os.path.exists(INTENTS_PATH):
-    raise FileNotFoundError("❌ No se encontró el archivo de intents.json.")
-
-with open(INTENTS_PATH, "r", encoding="utf-8") as f:
+# Cargar respuestas predefinidas desde intents.json
+with open("ai/data/intents.json", "r", encoding="utf-8") as f:
     intents = json.load(f)
 
+# Crear un diccionario de respuestas según la emoción detectada
 response_map = {intent['tag']: intent['responses'] for intent in intents['intents']}
 
-def load_model():
-    """Carga el modelo entrenado y el codificador de etiquetas."""
-    if not all(os.path.exists(path) for path in [MODEL_PATH, ENCODER_PATH]):
-        raise FileNotFoundError("❌ No se encontraron los archivos del modelo. Entrena el modelo primero.")
-    
-    model = joblib.load(MODEL_PATH)
-    label_encoder = joblib.load(ENCODER_PATH)
-    return model, label_encoder
-
 def predict_emotion(text):
-    """ Predice la emoción de un texto. """
-    model, label_encoder = load_model()
-    prediction = model.predict([text])[0]
-    emotion = label_encoder.inverse_transform([prediction])[0]
-    return emotion
+    """ Predice la emoción de un texto y devuelve la etiqueta correspondiente. """
+    X_input = vectorizer.transform([text])
+    emotion_index = model.predict(X_input)[0]
+    return label_classes[emotion_index]
 
 def generate_response(user_input):
     """ Genera una respuesta basada en la emoción detectada. """
     emotion = predict_emotion(user_input)
     
     if emotion in response_map:
-        return np.random.choice(response_map[emotion])  # Escoge una respuesta aleatoria
+        return np.random.choice(response_map[emotion])  # Escoge una respuesta aleatoria de la lista
     
     return "Lo siento, no entendí tu emoción. ¿Puedes decirlo de otra manera?"
 

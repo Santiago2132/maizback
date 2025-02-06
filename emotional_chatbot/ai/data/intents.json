@@ -9,6 +9,17 @@
           ]
       },
       {
+            "tag": "saludo",
+            "patterns": ["Hola", "¿Cómo estás?", "Hey", "Hola, ¿qué tal?", "Buenos días", "Buenas tardes", "¿Qué pasa?", "¿Cómo te va?", "¡Saludos!", "¡Hola amigo!", "¿Qué onda?", "¡Hola a todos!", "Un placer saludarte"],
+            "responses": [
+                "Hola, ¿cómo te sientes hoy? Estoy aquí para escuchar y ayudar.",
+                "¡Hola! Espero que estés teniendo un buen día. Cuéntame, ¿qué sucede en tu vida?",
+                "¡Saludos! Es un gusto verte aquí. ¿Cómo va tu día?",
+                "¡Hola, amigo! Espero que todo esté yendo bien. ¿En qué puedo ayudarte hoy?",
+                "¡Hola! Siempre es un placer saludarte. ¿Cómo te encuentras?"
+            ]
+        },
+      {
           "tag": "tristeza",
           "patterns": ["Me siento triste", "No tengo ganas de hacer nada", "Estoy deprimido", "Siento una gran melancolía", "No encuentro alegría en nada"],
           "responses": [
