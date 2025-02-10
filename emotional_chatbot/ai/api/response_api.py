@@ -1,38 +1,59 @@
 import os
+import json
+import joblib
+import numpy as np
 from flask import Flask, request, jsonify
-from transformers import pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Inicializar Flask y el modelo
+# Inicializar Flask
 app = Flask(__name__)
 
-# Cargar modelo de generación de texto
+# Cargar modelos y recursos
 try:
-    chatbot = pipeline("text-generation", model="gpt2")  
+    model = joblib.load("ai/models/emotion_model.pkl")
+    vectorizer = joblib.load("ai/models/vectorizer.pkl")
+    label_classes = np.load("ai/models/label_encoder_classes.npy", allow_pickle=True)
+    
+    with open("ai/data/intents.json", "r", encoding="utf-8") as f:
+        intents = json.load(f)
+    
+    response_map = {intent['tag']: intent['responses'] for intent in intents['intents']}
 except Exception as e:
-    print(f"Error cargando el modelo: {e}")
-    chatbot = None
+    print(f"Error cargando modelos o datos: {e}")
+    model, vectorizer, label_classes, response_map = None, None, None, {}
+
+
+def predict_emotion(text):
+    """ Predice la emoción de un texto y devuelve la etiqueta correspondiente. """
+    X_input = vectorizer.transform([text])
+    emotion_index = model.predict(X_input)[0]
+    return label_classes[emotion_index]
+
+
+def generate_response(user_input):
+    """ Genera una respuesta basada en la emoción detectada. """
+    emotion = predict_emotion(user_input)
+    return np.random.choice(response_map.get(emotion, ["Lo siento, no entendí tu emoción. ¿Puedes decirlo de otra manera?"]))
+
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    if chatbot is None:
-        return jsonify({"error": "El modelo no se cargó correctamente"}), 500
-
+    if any(x is None for x in (model, vectorizer)) or label_classes is None:
+        return jsonify({"error": "Los modelos no se cargaron correctamente"}), 500
+    
     try:
-        # Obtener mensaje del usuario
         data = request.get_json()
         user_message = data.get('message', '').strip()
         
         if not user_message:
             return jsonify({"error": "No se proporcionó un mensaje"}), 400
         
-        # Generar respuesta
-        response = chatbot(user_message, max_length=50, num_return_sequences=1)
-        bot_response = response[0]['generated_text'].strip()
-        
+        bot_response = generate_response(user_message)
         return jsonify({"response": bot_response})
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
