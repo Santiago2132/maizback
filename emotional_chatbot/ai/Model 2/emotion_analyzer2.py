@@ -3,8 +3,8 @@ import joblib
 import numpy as np
 
 # Rutas del modelo
-MODEL_PATH = "ai/models/emotion_model.pipeline"
-ENCODER_PATH = "ai/models/label_encoder.pkl"
+MODEL_PATH = "M:/maizback/emotional_chatbotai/models2/emotion_model.pipeline"
+ENCODER_PATH = "M:/maizback/emotional_chatbotai/models2/label_encoder.pkl"
 
 def check_model_files():
     """Verifica que los archivos del modelo existen."""

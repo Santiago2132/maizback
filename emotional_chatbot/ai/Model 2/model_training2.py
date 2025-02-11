@@ -21,7 +21,7 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 # Configuración inicial de directorios
-DIRECTORIES = ["ai/logs", "ai/models", "ai/metrics", "ai/data"]
+DIRECTORIES = ["ai/logs", "ai/models2", "ai/metrics", "ai/data"]
 for directory in DIRECTORIES:
     os.makedirs(directory, exist_ok=True)
 
@@ -188,8 +188,8 @@ def train_emotional_model():
         }
         
         # Guardado de artefactos
-        joblib.dump(pipeline, "ai/models/emotion_model.pipeline")
-        joblib.dump(le, "ai/models/label_encoder.pkl")
+        joblib.dump(pipeline, "ai/models2/emotion_model.pipeline")
+        joblib.dump(le, "ai/models2/label_encoder.pkl")
         
         with open("ai/metrics/training_stats.json", "w") as f:
             json.dump(training_stats, f, indent=2, ensure_ascii=False)
