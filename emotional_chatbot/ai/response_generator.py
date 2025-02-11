@@ -29,7 +29,7 @@ def generate_response(user_input):
         return np.random.choice(response_map[emotion])  # Escoge una respuesta aleatoria de la lista
     
     return "Lo siento, no entendí tu emoción. ¿Puedes decirlo de otra manera?"
-'''🐢'''
+
 if __name__ == "__main__":
     while True:
         user_text = input("Tú: ")
