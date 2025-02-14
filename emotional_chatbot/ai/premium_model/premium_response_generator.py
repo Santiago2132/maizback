@@ -4,8 +4,8 @@ import joblib
 import numpy as np
 
 # Rutas del modelo
-MODEL_PATH = "ai/models2/emotion_model.pipeline"
-ENCODER_PATH = "ai/models2/label_encoder.pkl"
+MODEL_PATH = "ai/premium_model/premium_models/emotion_model.pipeline"
+ENCODER_PATH = "/ai/premium_model/premium_models/label_encoder.pkl"
 INTENTS_PATH = "ai/data/intents.json"
 
 # Cargar respuestas predefinidas
