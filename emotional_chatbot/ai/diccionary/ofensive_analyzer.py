@@ -1,7 +1,7 @@
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow import keras#type: ignore
+from tensorflow.keras.preprocessing.text import Tokenizer#type: ignore
+from tensorflow.keras.preprocessing.sequence import pad_sequences#type: ignore
 import numpy as np
 import pandas as pd
 
