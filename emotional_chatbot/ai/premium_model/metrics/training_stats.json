@@ -1,0 +1,155 @@
+{
+  "timestamp": "2025-02-12T09:34:03.895710",
+  "training_time": "0:00:12.347532",
+  "cv_scores": {
+    "mean_accuracy": 0.3966,
+    "std_accuracy": 0.0615,
+    "scores": [
+      0.38235294117647056,
+      0.5,
+      0.35294117647058826,
+      0.3235294117647059,
+      0.42424242424242425
+    ]
+  },
+  "test_accuracy": 0.47058823529411764,
+  "class_distribution": {
+    "ansiedad": 5,
+    "conflicto interno": 4,
+    "estrés": 4,
+    "felicidad": 4,
+    "motivacion": 4,
+    "saludo": 4,
+    "soledad": 4,
+    "tristeza": 5
+  },
+  "classification_report": {
+    "ansiedad": {
+      "precision": 1.0,
+      "recall": 0.4,
+      "f1-score": 0.5714285714285714,
+      "support": 5.0
+    },
+    "conflicto interno": {
+      "precision": 0.375,
+      "recall": 0.75,
+      "f1-score": 0.5,
+      "support": 4.0
+    },
+    "estrés": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "felicidad": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 4.0
+    },
+    "motivacion": {
+      "precision": 0.5,
+      "recall": 0.25,
+      "f1-score": 0.3333333333333333,
+      "support": 4.0
+    },
+    "saludo": {
+      "precision": 0.42857142857142855,
+      "recall": 0.75,
+      "f1-score": 0.5454545454545454,
+      "support": 4.0
+    },
+    "soledad": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 4.0
+    },
+    "tristeza": {
+      "precision": 0.375,
+      "recall": 0.6,
+      "f1-score": 0.46153846153846156,
+      "support": 5.0
+    },
+    "accuracy": 0.47058823529411764,
+    "macro avg": {
+      "precision": 0.5014880952380952,
+      "recall": 0.46875,
+      "f1-score": 0.44432650682650676,
+      "support": 34.0
+    },
+    "weighted avg": {
+      "precision": 0.5124299719887954,
+      "recall": 0.47058823529411764,
+      "f1-score": 0.44857103680633087,
+      "support": 34.0
+    }
+  },
+  "model_metadata": {
+    "features": 59,
+    "classes": [
+      "ansiedad",
+      "conflicto interno",
+      "estrés",
+      "felicidad",
+      "motivacion",
+      "saludo",
+      "soledad",
+      "tristeza"
+    ],
+    "parameters": {
+      "memory": "None",
+      "steps": "[('tfidfvectorizer', TfidfVectorizer(max_df=0.9, max_features=10000, min_df=3, ngram_range=(1, 2),\n                stop_words='english')), ('smote', SMOTE(random_state=42)), ('gradientboostingclassifier', GradientBoostingClassifier(max_depth=10, n_estimators=200, random_state=42))]",
+      "transform_input": "None",
+      "verbose": "False",
+      "tfidfvectorizer": "TfidfVectorizer(max_df=0.9, max_features=10000, min_df=3, ngram_range=(1, 2),\n                stop_words='english')",
+      "smote": "SMOTE(random_state=42)",
+      "gradientboostingclassifier": "GradientBoostingClassifier(max_depth=10, n_estimators=200, random_state=42)",
+      "tfidfvectorizer__analyzer": "word",
+      "tfidfvectorizer__binary": "False",
+      "tfidfvectorizer__decode_error": "strict",
+      "tfidfvectorizer__dtype": "<class 'numpy.float64'>",
+      "tfidfvectorizer__encoding": "utf-8",
+      "tfidfvectorizer__input": "content",
+      "tfidfvectorizer__lowercase": "True",
+      "tfidfvectorizer__max_df": "0.9",
+      "tfidfvectorizer__max_features": "10000",
+      "tfidfvectorizer__min_df": "3",
+      "tfidfvectorizer__ngram_range": "(1, 2)",
+      "tfidfvectorizer__norm": "l2",
+      "tfidfvectorizer__preprocessor": "None",
+      "tfidfvectorizer__smooth_idf": "True",
+      "tfidfvectorizer__stop_words": "english",
+      "tfidfvectorizer__strip_accents": "None",
+      "tfidfvectorizer__sublinear_tf": "False",
+      "tfidfvectorizer__token_pattern": "(?u)\\b\\w\\w+\\b",
+      "tfidfvectorizer__tokenizer": "None",
+      "tfidfvectorizer__use_idf": "True",
+      "tfidfvectorizer__vocabulary": "None",
+      "smote__k_neighbors": "5",
+      "smote__random_state": "42",
+      "smote__sampling_strategy": "auto",
+      "gradientboostingclassifier__ccp_alpha": "0.0",
+      "gradientboostingclassifier__criterion": "friedman_mse",
+      "gradientboostingclassifier__init": "None",
+      "gradientboostingclassifier__learning_rate": "0.1",
+      "gradientboostingclassifier__loss": "log_loss",
+      "gradientboostingclassifier__max_depth": "10",
+      "gradientboostingclassifier__max_features": "None",
+      "gradientboostingclassifier__max_leaf_nodes": "None",
+      "gradientboostingclassifier__min_impurity_decrease": "0.0",
+      "gradientboostingclassifier__min_samples_leaf": "1",
+      "gradientboostingclassifier__min_samples_split": "2",
+      "gradientboostingclassifier__min_weight_fraction_leaf": "0.0",
+      "gradientboostingclassifier__n_estimators": "200",
+      "gradientboostingclassifier__n_iter_no_change": "None",
+      "gradientboostingclassifier__random_state": "42",
+      "gradientboostingclassifier__subsample": "1.0",
+      "gradientboostingclassifier__tol": "0.0001",
+      "gradientboostingclassifier__validation_fraction": "0.1",
+      "gradientboostingclassifier__verbose": "0",
+      "gradientboostingclassifier__warm_start": "False"
+    }
+  }
+}
