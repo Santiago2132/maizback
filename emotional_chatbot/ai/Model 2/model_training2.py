@@ -5,15 +5,17 @@ import numpy as np
 import json
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import train_test_split, cross_val_score, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, accuracy_score
 from sklearn.pipeline import Pipeline
 import joblib
 import re
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import make_pipeline as make_imb_pipeline
 
 # Descargar recursos NLTK (ejecutar solo primera vez)
 import nltk
@@ -21,7 +23,7 @@ nltk.download('wordnet')
 nltk.download('stopwords')
 
 # Configuración inicial de directorios
-DIRECTORIES = ["ai/logs", "ai/models", "ai/metrics", "ai/data"]
+DIRECTORIES = ["ai/logs", "ai/models2", "ai/metrics", "ai/data"]
 for directory in DIRECTORIES:
     os.makedirs(directory, exist_ok=True)
 
@@ -55,42 +57,32 @@ class TextPreprocessor:
         return ' '.join(words)
 
 def load_and_preprocess_data():
-    """Carga y preprocesa solo datos de emociones"""
+    """Carga y preprocesa datos desde intents2.json"""
     try:
         logging.info("Iniciando carga y preprocesamiento de datos...")
         
-        # Carga de datos emocionales
-        emotions_df = pd.read_csv("ai/data/emotional_dataset.csv")
+        # Carga de datos desde intents2.json
+        with open("ai/data/intents2.json", "r") as f:
+            intents_data = json.load(f)
+        
+        texts = []
+        labels = []
+        for intent in intents_data['intents']:
+            for pattern in intent['patterns']:
+                texts.append(pattern)
+                labels.append(intent['tag'])
         
         # Preprocesamiento de texto
         preprocessor = TextPreprocessor()
-        texts = emotions_df['text'].apply(preprocessor.clean_text).tolist()
-        labels = emotions_df['emotion'].tolist()
+        texts = [preprocessor.clean_text(text) for text in texts]
         
         # Codificación de etiquetas
         le = LabelEncoder()
         encoded_labels = le.fit_transform(labels)
         
-        # Filtrar clases con pocas muestras
-        unique, counts = np.unique(encoded_labels, return_counts=True)
-        valid_classes = unique[counts >= 5]
-        mask = np.isin(encoded_labels, valid_classes)
+        logging.info(f"Datos procesados: {len(texts)} muestras, {len(le.classes_)} clases")
         
-        # Aplicar filtrado
-        filtered_texts = [texts[i] for i, valid in enumerate(mask) if valid]
-        filtered_labels = encoded_labels[mask]
-        filtered_class_names = le.inverse_transform(filtered_labels)
-        
-        # Re-encodear con clases filtradas
-        le_filtered = LabelEncoder()
-        final_labels = le_filtered.fit_transform(filtered_class_names)
-        
-        logging.info(
-            f"Datos procesados: {len(filtered_texts)} muestras, "
-            f"{len(le_filtered.classes_)} clases válidas"
-        )
-        
-        return filtered_texts, final_labels, le_filtered
+        return texts, encoded_labels, le
     
     except Exception as e:
         logging.error(f"Error en preprocesamiento: {str(e)}")
@@ -109,31 +101,32 @@ def train_emotional_model():
         if len(np.unique(labels)) < 2:
             raise ValueError("Se requieren al menos 2 clases para entrenamiento")
         
-        # Crear pipeline completo
-        pipeline = Pipeline([
-            ('tfidf', TfidfVectorizer(
+        # Crear pipeline completo con SMOTE para manejo de clases desbalanceadas
+        pipeline = make_imb_pipeline(
+            TfidfVectorizer(
                 max_features=10000,
                 ngram_range=(1, 2),
                 stop_words='english',
                 min_df=3,
                 max_df=0.9
-            )),
-            ('classifier', RandomForestClassifier(
-                n_estimators=150,
-                max_depth=30,
-                class_weight='balanced_subsample',
-                n_jobs=-1,
+            ),
+            SMOTE(random_state=42),
+            GradientBoostingClassifier(
+                n_estimators=200,
+                learning_rate=0.1,
+                max_depth=10,
                 random_state=42
-            ))
-        ])
+            )
+        )
         
         # Validación cruzada
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
         cv_scores = cross_val_score(
             pipeline,
             texts,
             labels,
-            cv=5,
-            scoring='f1_weighted',
+            cv=cv,
+            scoring='accuracy',
             n_jobs=-1
         )
         
@@ -150,7 +143,7 @@ def train_emotional_model():
         
         # Evaluación
         y_pred = pipeline.predict(X_val)
-        accuracy = pipeline.score(X_val, y_val)
+        accuracy = accuracy_score(y_val, y_pred)
         
         # Generar reporte
         class_names = le.inverse_transform(np.unique(y_val))
@@ -168,8 +161,8 @@ def train_emotional_model():
             "timestamp": start_time.isoformat(),
             "training_time": str(datetime.now() - start_time),
             "cv_scores": {
-                "mean_f1": round(float(cv_scores.mean()), 4),
-                "std_f1": round(float(cv_scores.std()), 4),
+                "mean_accuracy": round(float(cv_scores.mean()), 4),
+                "std_accuracy": round(float(cv_scores.std()), 4),
                 "scores": cv_scores.tolist()
             },
             "test_accuracy": float(accuracy),
@@ -181,22 +174,22 @@ def train_emotional_model():
                 json.dumps(report, default=lambda x: float(x) if isinstance(x, (np.int64, np.float64)) else x)
             ),
             "model_metadata": {
-                "features": int(len(pipeline.named_steps['tfidf'].get_feature_names_out())),
+                "features": int(len(pipeline.named_steps['tfidfvectorizer'].get_feature_names_out())),
                 "classes": class_names.tolist(),
                 "parameters": {k: str(v) for k, v in pipeline.get_params().items()}
             }
         }
         
         # Guardado de artefactos
-        joblib.dump(pipeline, "ai/models/emotion_model.pipeline")
-        joblib.dump(le, "ai/models/label_encoder.pkl")
+        joblib.dump(pipeline, "ai/models2/emotion_model.pipeline")
+        joblib.dump(le, "ai/models2/label_encoder.pkl")
         
         with open("ai/metrics/training_stats.json", "w") as f:
             json.dump(training_stats, f, indent=2, ensure_ascii=False)
         
         logging.info(
             f"Entrenamiento completado en {training_stats['training_time']}\n"
-            f"Validación cruzada F1: {training_stats['cv_scores']['mean_f1']:.2%} (±{training_stats['cv_scores']['std_f1']:.2%})\n"
+            f"Validación cruzada Accuracy: {training_stats['cv_scores']['mean_accuracy']:.2%} (±{training_stats['cv_scores']['std_accuracy']:.2%})\n"
             f"Precisión final: {accuracy:.2%}\n"
             f"Clases detectadas: {len(class_names)}"
         )
