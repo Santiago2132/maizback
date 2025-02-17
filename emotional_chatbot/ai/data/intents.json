@@ -330,6 +330,23 @@
               "¡Me alegra saber que te sientes mejor! Estoy aquí para ti siempre que lo necesites.",
               "Gracias a ti por abrirte. La comunicación es clave para el bienestar emocional, y estoy aquí para acompañarte."
             ]
+          },
+          {
+            "tag": "me_siento_mal",
+            "patterns": [
+              "Me siento mal", 
+              "No me siento bien", 
+              "Estoy triste", 
+              "No tengo ánimos hoy", 
+              "Siento que todo está mal"
+            ],
+            "responses": [
+              "Lamento que te sientas así. Si quieres hablar, estoy aquí para escucharte.",
+              "A veces, los días difíciles llegan, pero no estás solo. ¿Hay algo en particular que te preocupa?",
+              "Tu bienestar es importante. Si necesitas apoyo, cuenta conmigo.",
+              "Es válido sentirse así. Si te ayuda, podemos hablar de ello o distraernos un poco juntos.",
+              "Estoy aquí para ti. No dudes en compartir lo que sientes si lo deseas."
+            ]
           }
     ]
 }

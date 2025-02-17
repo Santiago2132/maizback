@@ -1,0 +1,176 @@
+{
+  "intents": [
+    {
+      "tag": "saludo",
+      "patterns": [
+        "Hola", "¿Cómo estás?", "Hey", "Hola, ¿qué tal?", "Buenos días", "Buenas tardes", "¿Qué pasa?", "¿Cómo te va?", 
+        "¡Saludos!", "¡Hola amigo!", "¿Qué onda?", "¡Hola a todos!", "Un placer saludarte", "Hola, ¿cómo te encuentras?", 
+        "¿Qué hay de nuevo?", "¿Cómo va todo?", "Hola, ¿cómo has estado?", "¿Qué tal tu día?", "¡Buen día!", "¡Hola, qué alegría verte!","Buenos días amigo", "Hi", "Hello"
+      ],
+      "responses": [
+        "Hola, mi nombre es Freudy, ¿cómo te sientes hoy? Estoy aquí para escuchar y ayudar.", 
+        "¡Hola!, Me encuentro encendido y en linea, espero que estés teniendo un buen día. Cuéntame, ¿qué sucede en tu vida?", 
+        "¡Saludos querido amigo! Es un gusto verte aquí. ¿Cómo va tu día?", 
+        "¡Hola, amigo! Espero que todo esté yendo bien. ¿En qué puedo ayudarte hoy?", 
+        "¡Hola! Siempre es un placer saludarte. ¿Cómo te encuentras?", 
+        "Hola, ¿qué tal? Espero que estés bien. ¿En qué puedo ayudarte hoy?", 
+        "¡Hola! Me alegra verte. ¿Cómo te sientes hoy?", 
+        "Hola, ¿cómo estás? Estoy aquí para lo que necesites.", 
+        "¡Hola! ¿Qué tal tu día? Espero que esté yendo bien.", 
+        "Hola, ¿cómo te va? Cuéntame cómo te sientes hoy."
+      ]
+    },
+    {
+      "tag": "tristeza",
+      "patterns": [
+        "Me siento triste", "No tengo ganas de hacer nada", "Estoy deprimido", "Siento una gran melancolía", 
+        "No encuentro alegría en nada", "Me siento vacío", "Todo parece gris", "No sé por qué estoy así", 
+        "Quiero llorar", "Me siento desanimado", "La tristeza me consume", "No veo luz al final del túnel", 
+        "Me siento abatido", "No tengo motivación", "Me siento solo y triste", "La vida no tiene sentido", 
+        "Me siento desesperanzado", "No sé cómo salir de esta tristeza", "Me siento abrumado por la tristeza", 
+        "No puedo dejar de sentirme triste", "Me siento derrotado", "La tristeza no me deja avanzar"
+      ],
+      "responses": [
+        "Lamento que te sientas así. A veces es útil compartir lo que pesa en tu corazón. ¿Qué está causando esta tristeza?", 
+        "Estoy aquí para apoyarte. Hablar puede ser un primer paso para aliviar esa carga. ¿Hay algo específico que quieras abordar?", 
+        "La tristeza puede ser abrumadora, pero no estás solo. ¿Te gustaría hablar de lo que sientes?", 
+        "Es normal sentirse triste a veces. ¿Qué te está afectando más en este momento?", 
+        "La tristeza es una emoción válida. ¿Te gustaría compartir lo que te está pasando?", 
+        "Estoy aquí para escucharte. A veces, hablar de lo que nos duele puede ayudar a sanar. ¿Qué te preocupa?", 
+        "No estás solo en esto. La tristeza puede ser difícil, pero juntos podemos encontrar una salida. ¿Qué te gustaría compartir?", 
+        "Es importante reconocer tus emociones. ¿Qué te está haciendo sentir triste hoy?", 
+        "La tristeza puede ser un momento para reflexionar. ¿Te gustaría hablar de lo que sientes?", 
+        "Estoy aquí para ti. La tristeza no dura para siempre, y juntos podemos encontrar una manera de avanzar."
+      ]
+    },
+    {
+      "tag": "ansiedad",
+      "patterns": [
+        "Estoy ansioso", "Tengo miedo", "No puedo dejar de pensar en lo malo", "Siento que todo podría salir mal", 
+        "Mi mente no se detiene", "Me siento inquieto", "Tengo miedo de lo que viene", "No puedo relajarme", 
+        "Siento que algo malo va a pasar", "Me siento abrumado por la ansiedad", "No puedo controlar mis pensamientos", 
+        "Me siento nervioso todo el tiempo", "La ansiedad me consume", "No sé cómo manejar esta ansiedad", 
+        "Me siento atrapado en mis pensamientos", "No puedo dormir por la ansiedad", "Me siento paralizado por el miedo", 
+        "La ansiedad no me deja vivir", "Me siento agobiado por la ansiedad", "No sé cómo salir de este ciclo de ansiedad", 
+        "Me siento inseguro por la ansiedad", "La ansiedad me está afectando demasiado"
+      ],
+      "responses": [
+        "Respira hondo. ¿Te gustaría compartir qué es lo que más te preocupa? A veces, externar esos pensamientos nos brinda claridad.", 
+        "La ansiedad puede resultar abrumadora. Recuerda que es una respuesta natural del cuerpo. A menudo, hablar de ello puede aliviar la carga.", 
+        "Estoy aquí para ayudarte a manejar la ansiedad. ¿Qué es lo que más te está preocupando en este momento?", 
+        "La ansiedad puede ser difícil de manejar, pero no estás solo. ¿Te gustaría hablar de lo que sientes?", 
+        "Es normal sentirse ansioso a veces. ¿Qué te está causando esa inquietud?", 
+        "La ansiedad puede ser abrumadora, pero juntos podemos encontrar maneras de manejarla. ¿Qué te preocupa más?", 
+        "Estoy aquí para escucharte. A veces, hablar de lo que nos causa ansiedad puede ayudar a calmarnos. ¿Qué te está pasando?", 
+        "La ansiedad no define quién eres. ¿Te gustaría compartir lo que sientes para que podamos trabajar en ello juntos?", 
+        "Es importante reconocer la ansiedad y buscar maneras de manejarla. ¿Qué te está causando estrés?", 
+        "No estás solo en esto. La ansiedad puede ser difícil, pero juntos podemos encontrar una salida. ¿Qué te gustaría compartir?"
+      ]
+    },
+    {
+      "tag": "felicidad",
+      "patterns": [
+        "Estoy feliz", "Hoy me fue muy bien", "Tengo buenas noticias", "Me siento muy contento", 
+        "Estoy en una buena etapa", "Me siento afortunado", "Hoy fue un gran día", "Me siento lleno de alegría", 
+        "Estoy emocionado por algo bueno", "Me siento agradecido", "La vida me sonríe", "Me siento en paz", 
+        "Estoy disfrutando el momento", "Me siento satisfecho", "Me siento lleno de energía positiva", 
+        "Me siento optimista", "Me siento agradecido por lo que tengo", "Me siento en armonía", 
+        "Me siento lleno de amor", "Me siento en plenitud", "Me siento feliz y agradecido"
+      ],
+      "responses": [
+        "¡Eso es maravilloso! Cuéntame más sobre lo que te hizo sentir así. Celebrar los momentos felices es importante.", 
+        "Me alegra saber que te sientes bien. La felicidad es un gran motivador. ¿Cómo piensas mantener esos sentimientos positivos?", 
+        "¡Qué alegría escuchar eso! Siempre es bueno celebrar los momentos felices. ¿Qué ha pasado?", 
+        "La felicidad es contagiosa. Cuéntame, ¿qué te ha hecho sentir así?", 
+        "Me alegra mucho que te sientas feliz. ¿Qué es lo que más te está dando alegría en este momento?", 
+        "¡Eso es genial! La felicidad es un regalo. ¿Qué te gustaría hacer para mantener esa sensación?", 
+        "Es maravilloso escuchar que te sientes feliz. ¿Qué te ha traído esa alegría?", 
+        "La felicidad es un estado que todos merecemos. ¿Qué te está haciendo sentir tan bien?", 
+        "¡Qué bueno que te sientas así! La felicidad es un gran impulso. ¿Qué te gustaría hacer con esa energía positiva?", 
+        "Me alegra saber que estás feliz. ¿Qué es lo que más te está llenando de alegría en este momento?"
+      ]
+    },
+    {
+      "tag": "estrés",
+      "patterns": [
+        "Tengo mucho que hacer", "Estoy estresado", "No puedo con todo", "Siento que el tiempo no me alcanza", 
+        "Me siento sobrecargado", "No sé cómo manejar el estrés", "Me siento agobiado", "Tengo demasiada presión", 
+        "No puedo relajarme", "Me siento abrumado por las responsabilidades", "No sé cómo priorizar", 
+        "Me siento estresado todo el tiempo", "El estrés me está afectando", "No puedo manejar el estrés", 
+        "Me siento agotado por el estrés", "El estrés no me deja pensar", "Me siento atrapado en el estrés", 
+        "No sé cómo reducir el estrés", "El estrés me está consumiendo", "Me siento frustrado por el estrés", 
+        "El estrés me está afectando físicamente"
+      ],
+      "responses": [
+        "Es normal sentirse abrumado a veces. Considera tomar un momento para organizar tus pensamientos. ¿Has intentado desglosar tus tareas?", 
+        "Un poco de estrés puede ser motivador, pero demasiado puede ser perjudicial. ¿Qué crees que te ayudaría a sentirte más en control?", 
+        "El estrés puede ser difícil de manejar, pero no estás solo. ¿Qué es lo que más te está causando estrés?", 
+        "Es importante encontrar maneras de manejar el estrés. ¿Te gustaría hablar de lo que te está agobiando?", 
+        "El estrés puede ser abrumador, pero juntos podemos encontrar maneras de manejarlo. ¿Qué te preocupa más?", 
+        "Estoy aquí para ayudarte a manejar el estrés. ¿Qué es lo que más te está afectando en este momento?", 
+        "El estrés es una respuesta natural, pero es importante manejarlo. ¿Qué te está causando más presión?", 
+        "No estás solo en esto. El estrés puede ser difícil, pero juntos podemos encontrar una salida. ¿Qué te gustaría compartir?", 
+        "Es importante reconocer el estrés y buscar maneras de manejarlo. ¿Qué te está causando más agobio?", 
+        "El estrés puede ser abrumador, pero juntos podemos encontrar maneras de manejarlo. ¿Qué te preocupa más?"
+      ]
+    },
+    {
+      "tag": "soledad",
+      "patterns": [
+        "Me siento solo", "No tengo con quién hablar", "No encajo", "Siento un vacío", 
+        "Nadie me comprende", "Me siento aislado", "No tengo a nadie", "Me siento desconectado", 
+        "Me siento solo en el mundo", "No tengo amigos", "Me siento abandonado", "Me siento incomprendido", 
+        "Me siento solo en mi dolor", "No tengo a quién recurrir", "Me siento solo en mi lucha", 
+        "Me siento solo en mis pensamientos", "No tengo a nadie que me escuche", "Me siento solo en mi vida", 
+        "Me siento solo en mi camino", "Me siento solo en mi situación", "Me siento solo en mi realidad"
+      ],
+      "responses": [
+        "Lamento que te sientas así. La soledad puede ser muy difícil de afrontar. ¿Te gustaría hablar sobre lo que sientes?", 
+        "No estás solo, y hablar puede ser liberador. ¿Cómo podría acompañarte en este momento?", 
+        "La soledad puede ser abrumadora, pero no estás solo. ¿Te gustaría hablar de lo que sientes?", 
+        "Es normal sentirse solo a veces. ¿Qué te está afectando más en este momento?", 
+        "La soledad es una emoción válida. ¿Te gustaría compartir lo que te está pasando?", 
+        "Estoy aquí para escucharte. A veces, hablar de lo que nos duele puede ayudar a sanar. ¿Qué te preocupa?", 
+        "No estás solo en esto. La soledad puede ser difícil, pero juntos podemos encontrar una salida. ¿Qué te gustaría compartir?", 
+        "Es importante reconocer tus emociones. ¿Qué te está haciendo sentir solo hoy?", 
+        "La soledad puede ser un momento para reflexionar. ¿Te gustaría hablar de lo que sientes?", 
+        "Estoy aquí para ti. La soledad no dura para siempre, y juntos podemos encontrar una manera de avanzar."
+      ]
+    },
+    {
+      "tag": "motivacion",
+      "patterns": [
+        "Necesito motivación", "Siento que no puedo más", "Quiero rendirme", "No veo un camino adelante", 
+        "Necesito un empujón", "No tengo ganas de hacer nada", "Me siento desmotivado", "No sé cómo seguir adelante", 
+        "Me siento atrapado", "No tengo energía", "Me siento sin rumbo", "No sé cómo encontrar motivación", 
+        "Me siento estancado", "No tengo fuerzas", "Me siento sin propósito", "No sé cómo avanzar", 
+        "Me siento perdido", "No tengo ganas de luchar", "Me siento sin esperanza", "No sé cómo salir de esta situación", 
+        "Me siento sin motivación"
+      ],
+      "responses": [
+        "Eres más fuerte de lo que crees. Cada paso cuenta y es importante reconocer tu esfuerzo. ¿Qué te gustaría lograr?", 
+        "No estás solo en esto. A veces, hablar sobre tus metas puede reavivar tu motivación. ¿Cómo puedo ayudarte a avanzar?", 
+        "La motivación puede ser difícil de encontrar, pero no estás solo. ¿Qué te gustaría lograr hoy?", 
+        "Es normal sentirse desmotivado a veces. ¿Qué te está afectando más en este momento?", 
+        "La motivación es una emoción válida. ¿Te gustaría compartir lo que te está pasando?", 
+        "Estoy aquí para escucharte. A veces, hablar de lo que nos duele puede ayudar a sanar. ¿Qué te preocupa?", 
+        "No estás solo en esto. La desmotivación puede ser difícil, pero juntos podemos encontrar una salida. ¿Qué te gustaría compartir?", 
+        "Es importante reconocer tus emociones. ¿Qué te está haciendo sentir desmotivado hoy?", 
+        "La desmotivación puede ser un momento para reflexionar. ¿Te gustaría hablar de lo que sientes?", 
+        "Estoy aquí para ti. La desmotivación no dura para siempre, y juntos podemos encontrar una manera de avanzar."
+      ]
+    },
+    {
+      "tag": "conflicto interno",
+      "patterns": [
+        "No sé qué hacer", "Siento dos cosas a la vez", "Tengo miedo y esperanza", "Estoy confundido sobre mis emociones", 
+        "No puedo decidir", "Me siento dividido", "No sé qué camino tomar", "Me siento en conflicto", 
+        "No sé qué elegir", "Me siento atrapado entre dos opciones", "No sé qué es lo correcto", 
+        "Me siento confundido sobre mis sentimientos", "No sé qué quiero", "Me siento en un dilema", 
+        "No sé cómo resolver este conflicto", "Me siento dividido entre dos emociones", "No sé qué hacer con mi vida", 
+        "Me siento en un laberinto emocional", "No sé cómo salir de este conflicto", "Me siento atrapado en mis pensamientos", 
+        "No sé cómo manejar este conflicto"
+      ]
+    }
+  ]
+}

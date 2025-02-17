@@ -32,3 +32,17 @@ Clases detectadas: 5
 Validación cruzada F1: 50.87% (±31.20%)
 Precisión final: 57.14%
 Clases detectadas: 5
+2025-02-12 09:27:18,991 - INFO - Iniciando entrenamiento del modelo...
+2025-02-12 09:27:18,991 - INFO - Iniciando carga y preprocesamiento de datos...
+2025-02-12 09:27:22,159 - INFO - Datos procesados: 83 muestras, 12 clases válidas
+2025-02-12 09:27:26,075 - INFO - Entrenamiento completado en 0:00:07.028888
+Validación cruzada F1: 38.05% (±11.50%)
+Precisión final: 52.94%
+Clases detectadas: 12
+2025-02-12 09:34:03,896 - INFO - Iniciando entrenamiento del modelo...
+2025-02-12 09:34:03,896 - INFO - Iniciando carga y preprocesamiento de datos...
+2025-02-12 09:34:06,935 - INFO - Datos procesados: 169 muestras, 8 clases
+2025-02-12 09:34:16,338 - INFO - Entrenamiento completado en 0:00:12.347532
+Validación cruzada Accuracy: 39.66% (±6.15%)
+Precisión final: 47.06%
+Clases detectadas: 8
