@@ -3,7 +3,20 @@ import json
 import joblib
 import numpy as np
 import tensorflow as tf
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Descargar recursos de NLTK
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+# Inicializar lematizador y stopwords
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words("english"))
 
 # Cargar modelos y recursos
 rf_model = joblib.load("ai/models/emotion_rf_model.pkl")
@@ -22,9 +35,16 @@ for file in intents_files:
         for intent in intents['intents']:
             response_map[intent['tag']] = intent['responses']
 
+def preprocess_text(text):
+    """Preprocesa el texto eliminando stopwords y aplicando lematización."""
+    tokens = word_tokenize(text.lower())
+    filtered_tokens = [lemmatizer.lemmatize(word) for word in tokens if word.isalnum() and word not in stop_words]
+    return " ".join(filtered_tokens)
+
 def predict_emotion(text):
     """ Predice la emoción de un texto utilizando ambos modelos. """
-    X_input = vectorizer.transform([text]).toarray()
+    preprocessed_text = preprocess_text(text)
+    X_input = vectorizer.transform([preprocessed_text]).toarray()
     rf_prediction = rf_model.predict(X_input)[0]
     mlp_prediction = np.argmax(mlp_model.predict(X_input), axis=1)[0]
     
