@@ -1,93 +1,132 @@
-<<<<<<< HEAD
-import tensorflow as tf
-from tensorflow import keras#type: ignore
-from tensorflow.keras.preprocessing.text import Tokenizer#type: ignore
-from tensorflow.keras.preprocessing.sequence import pad_sequences#type: ignore
-import numpy as np
-=======
 import os
-import re
 import nltk
->>>>>>> patricia
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, LSTM, Dense, GlobalAveragePooling1D
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+import numpy as np
 import pandas as pd
+import pickle
 
-# Descargar el recurso necesario para tokenización
+# Descargar recursos de tokenización de nltk
 nltk.download('punkt')
 
-# Ruta del archivo CSV
-offensive_path = "../data/dictionary_word_dataset.csv"
+# Ruta del dataset
+DATASET_PATH = "../data/dictionary_word_dataset.csv"
+MODEL_PATH = "models/offensive_model.h5"
+TOKENIZER_PATH = "models/tokenizer.pkl"
 
-# Verificar si el archivo existe (comentado para que no imprima)
-# def check_file_exists(file_path):
-#     return os.path.exists(file_path)
-
-# Cargar palabras ofensivas con pandas
-def load_offensive_words_pandas(file_path):
-    try:
-        df = pd.read_csv(file_path, header=None, encoding="utf-8")
-        words = df[0].astype(str).str.lower().tolist()
-        return words
-    except FileNotFoundError:
-        return []
-    except pd.errors.EmptyDataError:
-        return []
-    except pd.errors.ParserError:
-        return []
-    except Exception:
-        return []
-
-# Cargar palabras ofensivas manualmente con open()
-def load_offensive_words_manual(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            words = [line.strip().lower() for line in lines if line.strip()]
-            return words
-    except FileNotFoundError:
-        return []
-    except Exception:
-        return []
-
-# Función para tokenizar usando nltk o re.findall() como respaldo
+# Tokenización con nltk
 def tokenize_text(text):
     try:
         return nltk.word_tokenize(text.lower())  # Convertir a minúsculas
     except Exception:
-        return re.findall(r'\b\w+\b', text.lower())  # Método alternativo
+        return re.findall(r'\b\w+\b', text.lower())  # Alternativa con regex
 
-# Función para detectar groserías en un texto
-def detect_offensive_words(text, offensive_words):
-    text = text.lower()  # Convertir a minúsculas
-    words = tokenize_text(text)  # Obtener tokens
-    print(f"🔎 Palabras detectadas en el texto: {words}")
+# Función para entrenar el modelo
+def train_model():
+    print("📥 Cargando dataset...")
     
-    # Buscar coincidencias
-    found_offensive_words = [word for word in words if word in offensive_words]
+    try:
+        df = pd.read_csv(DATASET_PATH)  # Asegúrate de que el archivo existe y tiene datos
+    except FileNotFoundError:
+        print(f"❌ Error: No se encontró el archivo en {DATASET_PATH}")
+        return
+    except pd.errors.EmptyDataError:
+        print("❌ Error: El archivo CSV está vacío.")
+        return
+    except Exception as e:
+        print(f"❌ Error inesperado al cargar el dataset: {e}")
+        return
 
-    if found_offensive_words:
-        return f"🚫 Mensaje bloqueado. Palabras ofensivas detectadas: {', '.join(found_offensive_words)}"
+    print("🔍 Verificando estructura del dataset...")
+    print(df.head())  # Muestra las primeras filas para verificar las columnas
+
+    if "text" not in df.columns or "label" not in df.columns:
+        print(f"❌ Error: El dataset debe contener las columnas 'text' y 'label'. Columnas encontradas: {df.columns}")
+        return
+
+    texts = df["text"].astype(str).tolist()
+    labels = df["label"].astype(int).tolist()
+    print(df["label"].value_counts())
+
+    print("🔄 Tokenizando texto...")
+    tokenizer = Tokenizer(num_words=10000, oov_token="<OOV>")
+    tokenizer.fit_on_texts(texts)
+    sequences = tokenizer.texts_to_sequences(texts)
+    padded_sequences = pad_sequences(sequences, maxlen=100, padding='post')
+
+    X = np.array(padded_sequences)
+    y = np.array(labels)
+
+    print("🔧 Creando modelo...")
+    model = Sequential([
+        Embedding(10000, 16, input_length=100),
+        GlobalAveragePooling1D(),
+        Dense(16, activation='relu'),
+        Dense(1, activation='sigmoid')  # Clasificación binaria
+    ])
+
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+    print("🏋️ Entrenando modelo...")
+    model.fit(X, y, epochs=10, batch_size=16, validation_split=0.2)
+
+    # Guardar modelo y tokenizer
+    os.makedirs("models", exist_ok=True)
+    model.save(MODEL_PATH)
     
-    return "✅ Mensaje seguro"
+    with open(TOKENIZER_PATH, "wb") as f:
+        pickle.dump(tokenizer, f)
 
-# Cargar palabras ofensivas con la mejor opción disponible
-# if check_file_exists(offensive_path):  # Comentado para evitar impresión
-#     offensive_words = load_offensive_words_pandas(offensive_path)
-#     if not offensive_words:
-#         offensive_words = load_offensive_words_manual(offensive_path)
-# else:
-#     offensive_words = []
+    print(f"✅ Modelo guardado en {MODEL_PATH}")
+    print(f"✅ Tokenizer guardado en {TOKENIZER_PATH}")
 
-offensive_words = load_offensive_words_pandas(offensive_path)
-if not offensive_words:
-    offensive_words = load_offensive_words_manual(offensive_path)
+# Cargar modelo entrenado
+def load_model():
+    if not os.path.exists(MODEL_PATH) or not os.path.exists(TOKENIZER_PATH):
+        print("⚠️ No se encontró un modelo entrenado. Ejecuta train_model() primero.")
+        return None, None
 
-# Modo interactivo para ingresar mensajes manualmente
-while True:
-    message = input("\nEscribe un mensaje (o escribe 'salir' para terminar): ")
+    model = tf.keras.models.load_model(MODEL_PATH)
+
+    with open(TOKENIZER_PATH, "rb") as f:
+        tokenizer = pickle.load(f)
+
+    print("✅ Modelo y tokenizer cargados correctamente.")
+    return model, tokenizer
+
+# Detectar mensajes ofensivos
+def detect_offensive_message(text, model, tokenizer):
+    text = text.lower()
+    words = tokenize_text(text)
     
-    if message.lower() == "salir":
-        print("👋 Programa finalizado.")
-        break
+    print(f"🔎 Palabras detectadas: {words}")
     
-    result = detect_offensive_words(message, offensive_words)
-    print(f"Resultado: {result}")
+    seq = tokenizer.texts_to_sequences([text])
+    padded = pad_sequences(seq, maxlen=100, padding='post')
+    prediction = model.predict(padded)[0][0]
+
+    print(f"📊 Probabilidad de mensaje ofensivo: {prediction}")
+    return "🚫 Mensaje ofensivo" if prediction > 0.6396 else "✅ Mensaje seguro"
+
+# Modo interactivo
+def interactive_mode():
+    model, tokenizer = load_model()
+    if model is None or tokenizer is None:
+        return
+
+    while True:
+        message = input("\nEscribe un mensaje (o 'salir' para terminar): ")
+        if message.lower() == "salir":
+            print("👋 Programa finalizado.")
+            break
+        result = detect_offensive_message(message, model, tokenizer)
+        print(f"Resultado: {result}")
+
+# Ejecutar el modo interactivo
+if __name__ == "__main__":
+    if not os.path.exists(MODEL_PATH):
+        train_model()
+    interactive_mode()
