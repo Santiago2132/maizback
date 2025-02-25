@@ -1,96 +1,86 @@
-import os
-import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.preprocessing.text import Tokenizer #type: ignore
+from tensorflow.keras.preprocessing.sequence import pad_sequences #type: ignore
 import numpy as np
-import json
-import joblib
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.models import Sequential #type: ignore
-from tensorflow.keras.layers import Dense, Dropout #type: ignore
-from tensorflow.keras.utils import to_categorical #type: ignore
+import os
+import re
+import nltk
+import pandas as pd
 
-def load_and_preprocess_data():
-    """Carga y preprocesa los datos desde múltiples diccionarios gratuitos."""
-    datasets = [
-        "ai/data/emotional_dataset.csv",
-        "ai/data/sentiment_dataset.csv",
-        "ai/data/expanded_emotion_data.csv"
-    ]
-    intents_paths = [
-        "ai/data/intents.json",
-        "ai/data/extra_intents.json"
-    ]
-    
-    texts, labels = [], []
-    le = LabelEncoder()
-    
-    for dataset in datasets:
-        if os.path.exists(dataset):
-            df = pd.read_csv(dataset)
-            texts.extend(df['text'].tolist())
-            labels.extend(df['emotion'].tolist())
-    
-    for intents_path in intents_paths:
-        if os.path.exists(intents_path):
-            with open(intents_path, encoding='utf-8') as f:
-                intents = json.load(f)
-            texts.extend([pattern for intent in intents['intents'] for pattern in intent['patterns']])
-            labels.extend([intent['tag'] for intent in intents['intents'] for _ in intent['patterns']])
-    
-    encoded_labels = le.fit_transform(labels)
-    
-    # Filtrar clases con menos de 2 muestras
-    unique, counts = np.unique(encoded_labels, return_counts=True)
-    valid_classes = {cls for cls, count in zip(unique, counts) if count > 1}
-    filtered_indices = [i for i, lbl in enumerate(encoded_labels) if lbl in valid_classes]
-    
-    texts = [texts[i] for i in filtered_indices]
-    encoded_labels = [encoded_labels[i] for i in filtered_indices]
-    
-    vectorizer = TfidfVectorizer(max_features=15000, stop_words=None)
-    X = vectorizer.fit_transform(texts).toarray()
-    y = to_categorical(encoded_labels)
-    
-    return X, y, vectorizer, le
+# Descargar el recurso necesario para tokenización
+nltk.download('punkt')
 
-def train_emotional_model():
-    """Entrena un modelo de clasificación de emociones basado en RandomForest y una red neuronal."""
-    X, y, vectorizer, le = load_and_preprocess_data()
-    
-    if y.shape[1] < 2:
-        raise ValueError("El conjunto de datos debe tener al menos 2 clases.")
-    
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, stratify=y.argmax(axis=1))
-    
-    # Modelo 1: Random Forest
-    rf_model = RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1)
-    rf_model.fit(X_train, y_train.argmax(axis=1))
-    rf_accuracy = rf_model.score(X_val, y_val.argmax(axis=1))
-    print(f"✅ Random Forest Accuracy: {rf_accuracy:.4f}")
-    
-    # Modelo 2: Red Neuronal (MLP)
-    mlp_model = Sequential([
-        Dense(512, activation='relu', input_shape=(X.shape[1],)),
-        Dropout(0.3),
-        Dense(256, activation='relu'),
-        Dropout(0.3),
-        Dense(y.shape[1], activation='softmax')
-    ])
-    
-    mlp_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    mlp_model.fit(X_train, y_train, epochs=15, batch_size=32, validation_data=(X_val, y_val))
-    mlp_accuracy = mlp_model.evaluate(X_val, y_val)[1]
-    print(f"✅ MLP Neural Network Accuracy: {mlp_accuracy:.4f}")
-    
-    os.makedirs("ai/models", exist_ok=True)
-    joblib.dump(rf_model, "ai/models/emotion_rf_model.pkl")
-    joblib.dump(vectorizer, "ai/models/vectorizer.pkl")
-    np.save("ai/models/label_encoder_classes.npy", le.classes_)
-    mlp_model.save("ai/models/emotion_mlp_model.h5")
-    
-    return rf_model, mlp_model
+# Ruta del archivo CSV
+offensive_path = "../data/dictionary_word_dataset.csv"
 
-if __name__ == "__main__":
-    train_emotional_model()
+# Cargar palabras ofensivas
+def load_offensive_words(file_path):
+    if os.path.exists(file_path):
+        try:
+            df = pd.read_csv(file_path, header=None, encoding="utf-8")
+            return df[0].astype(str).str.lower().tolist()
+        except Exception:
+            return []
+    return []
+
+# Tokenización
+def tokenize_text(text):
+    try:
+        return nltk.word_tokenize(text.lower())
+    except Exception:
+        return re.findall(r'\b\w+\b', text.lower())
+
+# Detección de palabras ofensivas
+def detect_offensive_words(text, offensive_words):
+    words = tokenize_text(text.lower())
+    found_offensive_words = [word for word in words if word in offensive_words]
+    return found_offensive_words
+
+# Cargar palabras ofensivas
+offensive_words = load_offensive_words(offensive_path)
+
+# Preparar datos para el modelo
+texts = ["Este es un mensaje seguro", "Este mensaje contiene groserías"]
+labels = [0, 1]  # 0: seguro, 1: ofensivo
+
+# Tokenización y padding
+tokenizer = Tokenizer(num_words=10000)
+tokenizer.fit_on_texts(texts)
+sequences = tokenizer.texts_to_sequences(texts)
+padded_sequences = pad_sequences(sequences, maxlen=50)
+
+# Crear y entrenar el modelo
+model = keras.Sequential([
+    keras.layers.Embedding(10000, 16),  # Eliminado input_length
+    keras.layers.GlobalAveragePooling1D(),
+    keras.layers.Dense(16, activation='relu'),
+    keras.layers.Dense(1, activation='sigmoid')
+])
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.fit(padded_sequences, np.array(labels), epochs=10)
+
+# Guardar el modelo
+model_dir = "ai/models"  # Ruta relativa
+os.makedirs(model_dir, exist_ok=True)  # Crear la carpeta si no existe
+model_path = os.path.join(model_dir, "offensive_language_detector.h5")  # Ruta completa
+model.save(model_path)  # Guardar el modelo
+
+# Modo interactivo
+while True:
+    message = input("\nEscribe un mensaje (o 'salir' para terminar): ")
+    
+    if message.lower() == "salir":
+        print("👋 Programa finalizado.")
+        break
+    
+    sequence = tokenizer.texts_to_sequences([message])
+    padded = pad_sequences(sequence, maxlen=50)
+    prediction = model.predict(padded)
+    
+    if prediction[0] > 0.5:
+        offensive_words_found = detect_offensive_words(message, offensive_words)
+        print(f"🚫 Mensaje bloqueado. Palabras ofensivas detectadas: {', '.join(offensive_words_found)}")
+    else:
+        print("✅ Mensaje seguro")
