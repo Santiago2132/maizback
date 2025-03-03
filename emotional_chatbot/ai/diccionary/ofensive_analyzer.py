@@ -18,9 +18,12 @@ offensive_path = "../data/dictionary_word_dataset.csv"
 def load_offensive_words(file_path):
     if os.path.exists(file_path):
         try:
-            df = pd.read_csv(file_path, header=None, encoding="utf-8")
-            return df[0].astype(str).str.lower().tolist()
-        except Exception:
+            df = pd.read_csv(file_path, encoding="utf-8")  # Usar header=0 por defecto
+            # Limpiar frases: quitar comillas, espacios extras, y normalizar
+            offensive_phrases = df["text"].astype(str).str.lower().str.replace(r'[\'"\s]+', ' ', regex=True).str.strip().tolist()
+            return offensive_phrases
+        except Exception as e:
+            print(f"Error: {e}")
             return []
     return []
 
@@ -31,11 +34,16 @@ def tokenize_text(text):
     except Exception:
         return re.findall(r'\b\w+\b', text.lower())
 
-# Detección de palabras ofensivas
+# Detección de palabras y frases ofensivas
 def detect_offensive_words(text, offensive_words):
-    words = tokenize_text(text.lower())
-    found_offensive_words = [word for word in words if word in offensive_words]
-    return found_offensive_words
+    # Normalizar el texto: eliminar caracteres especiales y espacios extras
+    text_clean = re.sub(r'[^\w\s]', '', text.lower())  # Quitar puntuación
+    text_clean = re.sub(r'\s+', ' ', text_clean).strip()  # Unificar espacios
+    
+    # Buscar coincidencias exactas de frases
+    found_phrases = [phrase for phrase in offensive_words if phrase in text_clean]
+    
+    return found_phrases
 
 # Cargar palabras ofensivas
 offensive_words = load_offensive_words(offensive_path)
