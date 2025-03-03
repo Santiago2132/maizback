@@ -4,33 +4,34 @@ import joblib
 import numpy as np
 import tensorflow as tf
 import nltk
-import re  # Importar 're' para expresiones regulares
+import re  # Importamos 're' para expresiones regulares
+import pandas as pd  # Importamos pandas para manejar archivos CSV
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.preprocessing import LabelEncoder  # Importar LabelEncoder
+from sklearn.preprocessing import LabelEncoder
 
-# Descargar recursos de NLTK
+# Descargamos recursos de NLTK
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-# Inicializar lematizador y stopwords
+# Inicializamos lematizador y stopwords
 lemmatizer = WordNetLemmatizer()
 stop_words = set(stopwords.words("english"))
 
-# Cargar modelos y recursos
+# Cargamos modelos y recursos
 mlp_model = tf.keras.models.load_model("ai/models/emotion_mlp_model.keras")
-mlp_model.compile(optimizer='adam', loss='categorical_crossentropy')  # Compilar para evitar advertencias
+mlp_model.compile(optimizer='adam', loss='categorical_crossentropy')  # Compilamos para evitar advertencias
 
 rf_model = joblib.load("ai/models/emotion_rf_model.pkl")
 vectorizer = joblib.load("ai/models/vectorizer.pkl")
 label_classes = np.load("ai/models/label_encoder_classes.npy", allow_pickle=True)
 
-# Reconstruir LabelEncoder
+# Reconstruimos el LabelEncoder
 le = LabelEncoder()
 le.classes_ = label_classes
 
-# Cargar respuestas predefinidas desde múltiples archivos JSON
+# Cargamos respuestas predefinidas de varios archivos JSON
 response_map = {}
 intents_files = ["ai/data/intents.json", "ai/data/extra_intents.json"]
 
@@ -39,16 +40,40 @@ for file in intents_files:
         with open(file, "r", encoding="utf-8") as f:
             intents = json.load(f)
         for intent in intents['intents']:
-            # Mapear cada etiqueta a sus posibles respuestas
+            # Mapeamos cada etiqueta a sus posibles respuestas
             response_map[intent['tag']] = intent['responses']
 
+# Función para cargar las palabras ofensivas desde un archivo CSV
+def load_offensive_words(file_path):
+    """Carga palabras ofensivas de un archivo CSV."""
+    if os.path.exists(file_path):
+        try:
+            df = pd.read_csv(file_path, header=None, encoding="utf-8")
+            # Aseguramos que todas las palabras estén en minúsculas
+            return df[0].astype(str).str.lower().tolist()
+        except Exception as e:
+            print(f"Error al cargar palabras ofensivas: {e}")
+            return []
+    else:
+        print(f"Archivo de palabras ofensivas no encontrado en {file_path}")
+        return []
+
+# Función para detectar palabras ofensivas en un mensaje
+def detect_offensive_words(text, offensive_words):
+    """Detecta palabras ofensivas en el texto de entrada."""
+    tokens = nltk.word_tokenize(text.lower())
+    # Opcionalmente, lematizamos las palabras para una mejor coincidencia
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
+    offensive_found = [word for word in tokens if word in offensive_words]
+    return offensive_found
+
+# Cargamos las palabras ofensivas
+offensive_words = load_offensive_words("ai/data/dictionary_word_dataset.csv")
+
 def text_preprocessing(text):
-    """Preprocesamiento consistente con el entrenamiento"""
-    lemmatizer = WordNetLemmatizer()
-    stop_words = set(stopwords.words('english'))
-    
-    # Limpieza de texto utilizando expresiones regulares
-    text = re.sub(r'[^a-zA-Z\s]', '', text, re.I|re.A)
+    """Preprocesamiento coherente con el entrenamiento."""
+    # Limpiamos el texto usando expresiones regulares
+    text = re.sub(r'[^a-zA-Z\s]', '', text, re.I | re.A)
     text = text.lower().strip()
     
     # Tokenización y lematización
@@ -62,25 +87,23 @@ def text_preprocessing(text):
     return ' '.join(tokens)
 
 def predict_emotion(text):
-    """Predicción con preprocesamiento consistente y alineación de probabilidades"""
+    """Realiza la predicción con preprocesamiento coherente y alineación de probabilidades."""
     preprocessed_text = text_preprocessing(text)
     X_input = vectorizer.transform([preprocessed_text])
     
-    # Obtener predicciones
+    # Obtenemos predicciones
     rf_pred = rf_model.predict(X_input)[0]
     mlp_probs = mlp_model.predict(X_input.toarray())[0]  # Probabilidades del MLP
-    mlp_pred = np.argmax(mlp_probs)
-
-    # Obtener probabilidades del Random Forest
+    
+    # Obtenemos probabilidades del Random Forest
     rf_probs_raw = rf_model.predict_proba(X_input)[0]
     
-    # Crear un array de ceros del tamaño total de clases
+    # Creamos un arreglo de ceros del tamaño de las clases
     all_classes = label_classes
     rf_proba = np.zeros(len(all_classes))
     
-    # Mapear las probabilidades del Random Forest a las posiciones correctas
-    rf_class_labels = le.inverse_transform(rf_model.classes_)  # Obtener etiquetas de clase reales
-
+    # Mapeamos las probabilidades de Random Forest a las posiciones correctas
+    rf_class_labels = le.inverse_transform(rf_model.classes_)
     for idx_rf, class_label in enumerate(rf_class_labels):
         idx_all = np.where(all_classes == class_label)[0][0]
         rf_proba[idx_all] = rf_probs_raw[idx_rf]
@@ -92,17 +115,26 @@ def predict_emotion(text):
     return predicted_class
 
 def generate_response(user_input):
-    """Genera una respuesta basada en la emoción detectada."""
+    """Genera una respuesta basada en la emoción detectada o maneja contenido ofensivo."""
+    # Primero, verificamos si hay palabras ofensivas
+    offensive_found = detect_offensive_words(user_input, offensive_words)
+    if offensive_found:
+        # Podríamos registrar las palabras ofensivas aquí si es necesario
+        return "Lo siento, pero mantengamos nuestra conversación respetuosa."
+    
+    # Continuamos con la predicción de emoción y generación de respuesta
     emotion = predict_emotion(user_input)
     
     if emotion in response_map:
-        return np.random.choice(response_map[emotion])  # Escoge una respuesta aleatoria de la lista
+        return np.random.choice(response_map[emotion])  # Elegimos una respuesta aleatoria de la lista
     
-    return "Lo siento, no entendí tu emoción. ¿Puedes decirlo de otra manera?"
+    return "Lo siento, no entendí bien. ¿Podrías reformular tu pregunta?"
 
 if __name__ == "__main__":
     while True:
         user_text = input("Tú: ")
-        if user_text.lower() in ["salir", "exit", "quit"]:
+        if user_text.lower() in ["exit", "quit"]:
+            print("Bot: ¡Adiós!")
             break
-        print("Bot:", generate_response(user_text))
+        response = generate_response(user_text)
+        print(f"Bot: {response}")
