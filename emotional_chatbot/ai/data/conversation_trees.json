@@ -1,0 +1,35 @@
+{
+    "users": {
+      "user_123": {
+        "message": "Me siento triste",
+        "left": {
+          "message": "¿Quieres hablar de ello?",
+          "left": {
+            "message": "Sí, estoy deprimido",
+            "left": {
+              "message": "Lamento oír eso. ¿Qué te preocupa?",
+              "left": {
+                "message": "Mis amigos no me entienden",
+                "left": {
+                  "message": "Es difícil, pero siempre hay alguien dispuesto a escuchar."
+                }
+              }
+            }
+          }
+        }
+      },
+      "user_456": {
+        "message": "Estoy feliz hoy",
+        "left": {
+          "message": "¡Eso es genial! ¿Qué pasó?",
+          "left": {
+            "message": "Aprobé mi examen",
+            "left": {
+              "message": "¡Felicidades! Debes estar muy orgulloso de ti mismo."
+            }
+          }
+        }
+      }
+    }
+  }
+  
