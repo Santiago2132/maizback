@@ -5,7 +5,7 @@ import json
 import joblib
 import re
 import nltk
-import tensorflow as tf  # Importar TensorFlow como tf
+import tensorflow as tf
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -34,10 +34,11 @@ def text_preprocessing(text):
     tokens = nltk.word_tokenize(text)
     tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words and len(word) > 2]
     
+    # Retornar el texto procesado correctamente
     return ' '.join(tokens)
 
 def load_and_preprocess_data():
-    """Carga y preprocesa los datos con mejor manejo de texto"""
+    """Carga y preprocesa los datos con filtrado de clases y mejor manejo de texto"""
     datasets = [
         "ai/data/emotional_dataset.csv",
         "ai/data/sentiment_dataset.csv",
@@ -70,20 +71,22 @@ def load_and_preprocess_data():
                     texts.append(processed_pattern)
                     labels.append(intent['tag'])
     
-    # Filtrado de clases
+    # Codificar etiquetas
     encoded_labels = le.fit_transform(labels)
-    unique, counts = np.unique(encoded_labels, return_counts=True)
-    valid_classes = {cls for cls, count in zip(unique, counts) if count >= 5}  # Mínimo 5 muestras
     
+    # Filtrar clases con menos de 5 muestras
+    unique, counts = np.unique(encoded_labels, return_counts=True)
+    valid_classes = unique[counts >= 5]
     filtered_indices = [i for i, lbl in enumerate(encoded_labels) if lbl in valid_classes]
     texts = [texts[i] for i in filtered_indices]
     encoded_labels = [encoded_labels[i] for i in filtered_indices]
     
-    # Balanceo de clases con SMOTE
-    vectorizer = TfidfVectorizer(max_features=20000, ngram_range=(1,2), stop_words='english')
+    # Vectorización con TF-IDF ajustado
+    vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1,2), stop_words='english')
     X = vectorizer.fit_transform(texts)
     
-    smote = SMOTE(k_neighbors=3, random_state=42)  # Ajuste de k_neighbors a 3
+    # Balanceo de clases con SMOTE
+    smote = SMOTE(k_neighbors=3, random_state=42)
     X_balanced, y_balanced = smote.fit_resample(X, encoded_labels)
     
     y = to_categorical(y_balanced)
@@ -102,7 +105,7 @@ def train_emotional_model():
     # Optimización de Random Forest
     rf_params = {
         'n_estimators': 500,
-        'max_depth': None,
+        'max_depth': 10,  # Limitar la profundidad para evitar sobreajuste
         'min_samples_split': 5,
         'class_weight': 'balanced',
         'n_jobs': -1,
@@ -114,23 +117,23 @@ def train_emotional_model():
     rf_accuracy = rf_model.score(X_val, y_val.argmax(axis=1))
     print(f"✅ Random Forest Accuracy: {rf_accuracy:.4f}")
     
-    # Mejorar modelo neuronal
+    # Mejorar modelo neuronal (MLP simplificado)
     mlp_model = Sequential([
-        tf.keras.Input(shape=(X.shape[1],)),  # Usar Input en lugar de input_shape
-        Dense(1024, activation='relu'),
-        BatchNormalization(),
-        Dropout(0.5),
+        tf.keras.Input(shape=(X.shape[1],)),
         Dense(512, activation='relu'),
         BatchNormalization(),
         Dropout(0.4),
         Dense(256, activation='relu'),
         BatchNormalization(),
         Dropout(0.3),
+        Dense(128, activation='relu'),
+        BatchNormalization(),
+        Dropout(0.2),
         Dense(y.shape[1], activation='softmax')
     ])
     
     optimizer = Adam(learning_rate=0.0005)
-    early_stop = EarlyStopping(monitor='val_loss', patience=8, restore_best_weights=True)
+    early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)  # Ajuste de patience a 5
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=1e-6)
     
     mlp_model.compile(optimizer=optimizer,
