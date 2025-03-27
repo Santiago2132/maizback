@@ -5,7 +5,7 @@ from dotenv import load_dotenv #pip install python-dotenv
 load_dotenv() # Carga las variables de entorno del .env
 
 class Database:
-    def _init_(self):
+    def __init__(self):
         self.host = os.getenv("DB_HOST")
         self.port = int(os.getenv("DB_PORT")) 
         self.user = os.getenv("DB_USER")
@@ -53,7 +53,7 @@ class Database:
         except Error as e:
             print(f"Error modificando datos: {e}")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     db = Database() #instancia
     db.connect() #llama la instancia y la conecta con la bd
     db.execute_query("SELECT DATABASE();")
