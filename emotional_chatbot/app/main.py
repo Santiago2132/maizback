@@ -6,11 +6,11 @@ import tensorflow as tf
 import nltk
 import re
 import pandas as pd
+import requests
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
 from fuzzywuzzy import fuzz
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 # Descargar recursos de NLTK
 nltk.download('punkt')
@@ -70,7 +70,7 @@ def text_preprocessing(text):
     return ' '.join(tokens)
 
 # Detección de similitud
-def is_similar_to_intent(input_text, patterns, threshold=65):
+def is_similar_to_intent(input_text, patterns, threshold=75):  # Aumentado a 75 para mayor precisión
     processed_input = text_preprocessing(input_text)
     for pattern in patterns:
         processed_pattern = text_preprocessing(pattern)
@@ -90,28 +90,17 @@ def predict_emotion(text, models):
         return "unknown"
     return models['label_encoder'].classes_[predicted_class_idx]
 
-# Generar párrafo con GPT-2
-tokenizer = GPT2Tokenizer.from_pretrained("datificate/gpt2-small-spanish")
-gen_model = GPT2LMHeadModel.from_pretrained("datificate/gpt2-small-spanish")
-tokenizer.pad_token = tokenizer.eos_token  # Configurar pad_token
-
-def generate_paragraph(prompt, max_new_tokens=50):
+# Generar párrafo con la API de "freuddy advance"
+def generate_paragraph(prompt):
     try:
-        inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True)
-        input_ids = inputs["input_ids"]
-        attention_mask = inputs["attention_mask"]
-        max_length = min(512, len(input_ids[0]) + max_new_tokens)
-        outputs = gen_model.generate(
-            input_ids,
-            attention_mask=attention_mask,
-            max_length=max_length,
-            num_return_sequences=1,
-            no_repeat_ngram_size=2,
-            temperature=0.7,
-            top_p=0.9,
-            pad_token_id=tokenizer.eos_token_id
-        )
-        return tokenizer.decode(outputs[0], skip_special_tokens=True)
+        body = {"query": prompt}
+        response = requests.post("http://207.248.81.83:4000/api/ask", json=body)
+        if response.status_code == 200:
+            return response.json()["response"]
+        else:
+            if DEBUG:
+                print(f"Error en la API: {response.status_code}")
+            return None
     except Exception as e:
         if DEBUG:
             print(f"Error en generate_paragraph: {str(e)}")
@@ -124,7 +113,7 @@ def add_to_history(role, message):
     if len(message) > 100:
         message = message[:100] + "..."
     conversation_history.append(f"{role}: {message}")
-    if len(conversation_history) > 3:
+    if len(conversation_history) > 5:  # Aumentado a 5 para más contexto
         conversation_history.pop(0)
 
 # Respuestas de respaldo por emoción
@@ -144,24 +133,23 @@ def generate_response(user_input, models, response_map, patterns_by_intent, offe
         return "Por favor, mantengamos el respeto en nuestra conversación."
     
     for tag, patterns in patterns_by_intent.items():
-        if is_similar_to_intent(user_input, patterns, 65):
+        if is_similar_to_intent(user_input, patterns):
             return np.random.choice(response_map[tag])
     
     emotion = predict_emotion(user_input, models)
     add_to_history("Usuario", user_input)
     
     if conversation_history:
-        history_summary = " ".join(conversation_history[-2:])
+        history_summary = " ".join(conversation_history[:-1])  # Usar todo el historial excepto el último (el actual)
     else:
         history_summary = ""
     prompt = f"El usuario dice: '{user_input}'. Está {emotion}. Responde con empatía."
     if history_summary:
         prompt = f"Contexto: {history_summary}\n" + prompt
     
-    response = generate_paragraph(prompt, max_new_tokens=50)
+    response = generate_paragraph(prompt)
     
     if response:
-        response = response.replace(prompt, "").strip()
         add_to_history("Bot", response)
         return response
     else:
