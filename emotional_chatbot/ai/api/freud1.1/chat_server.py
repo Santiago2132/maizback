@@ -11,6 +11,16 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
 from fuzzywuzzy import fuzz
 from flask import Flask, request, jsonify
+# from connect_bd import Database
+import mysql.connector
+from mysql.connector import Error
+from dotenv import load_dotenv #pip install python-dotenv
+import secrets  # Para generar un salt aleatorio
+import base64  # Para codificar el hash en base64
+from hashlib import scrypt
+load_dotenv() # Carga las variables de entorno del .env
+import jwt # Para generar tokens propios
+import datetime
 
 # Descargamos recursos de NLTK
 nltk.download('punkt')
@@ -142,6 +152,232 @@ app = Flask(__name__)
 # Cargar modelos y datos al iniciar el servidor
 models, offensive_words, response_map, patterns_by_intent = initialize_system()
 
+# --------------------- CONEXIÓN A BASE DE DATOS -------------------------
+def connect():
+    try:
+        connection = mysql.connector.connect(
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", 3306)),  # Puerto por defecto
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME")
+        )
+        if connection.is_connected():
+            print("Conexión exitosa a la base de datos")
+            return connection
+    except Error as e:
+        print(f"Error al conectar a MySQL: {e}")
+        return None
+
+# ----------------------- HASH DE CONTRASEÑAS -------------------------
+def generate_hash_password(password_plain):
+    salt = secrets.token_bytes(16)  # Genera un salt aleatorio
+    password_bytes = password_plain.encode('utf-8')
+    password_hash = scrypt(password_bytes, salt=salt, n=16384, r=8, p=1, dklen=64)
+    return base64.b64encode(salt + password_hash).decode('utf-8')  # Guardamos salt + hash
+
+def check_password(password_plain, stored_hash):
+    missing_padding = len(stored_hash) % 4
+    if missing_padding:
+        stored_hash += '=' * (4 - missing_padding)
+    stored_hash_bytes = base64.b64decode(stored_hash.encode('utf-8'))
+    salt = stored_hash_bytes[:16]
+    password_bytes = password_plain.encode('utf-8')
+    new_hash = scrypt(password_bytes, salt=salt, n=16384, r=8, p=1, dklen=64)
+    return new_hash == stored_hash_bytes[16:]  # Compara con la parte del hash
+
+
+# -------------------------------- API LOGIN -----------------------------------------------
+
+# SECRET_KEY = "tu_clave_secreta_super_segura"
+SECRET_KEY = "holi"
+
+# Ruta para insertar un nuevo usuario con app
+@app.route('/registro/app', methods=['POST'])
+def insert_user():
+    if not request.is_json:
+        return jsonify({"error": "El Content-Type debe ser 'application/json'"}), 415
+
+    data = request.get_json()
+
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
+    confirm_password = data.get("confirm_password")
+
+    if not email or not name or not password or not confirm_password:
+        return jsonify({"error": "Faltan datos obligatorios (email, name, password o confirm_password)."}), 400
+
+    if password != confirm_password:
+        return jsonify({"error": "Las contraseñas no coinciden."}), 400
+
+    try:
+        connection = connect()
+        if connection is None:
+            return jsonify({"error": "No se pudo conectar a la base de datos."}), 500
+
+        cursor = connection.cursor(dictionary=True)
+
+        # Verificar si el usuario ya existe
+        cursor.execute("SELECT id, contrasena FROM usuarios WHERE email = %s", (email,))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            stored_password = usuario["contrasena"]
+            if check_password(password, stored_password):
+                return jsonify({"message": "El usuario ya está registrado", "user_id": usuario["id"]}), 200
+            else:
+                return jsonify({"error": "Contraseña incorrecta."}), 401
+
+        # Crear nuevo usuario
+        hashed_password = generate_hash_password(password)
+        insert_user_query = "INSERT INTO usuarios (nombre, email, contrasena) VALUES (%s, %s, %s)"
+        cursor.execute(insert_user_query, (name, email, hashed_password))
+        connection.commit()
+        user_id = cursor.lastrowid
+
+        # Obtener ID de la insignia 'Bienvenido'
+        cursor.execute("SELECT id FROM insignias WHERE nombre = %s", ("Bienvenido",))
+        bienvenido = cursor.fetchone()
+
+        if bienvenido:
+            insert_insignia_query = """
+                INSERT INTO insignias_usuario (id_usuario, id_insignia)
+                VALUES (%s, %s)
+            """
+            cursor.execute(insert_insignia_query, (user_id, bienvenido["id"]))
+            connection.commit()
+
+        return jsonify({"message": "Usuario registrado exitosamente con app.", "user_id": user_id}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+# Ruta para insertar un nuevo usuario con google
+@app.route('/registro/google', methods=['POST'])
+def insert_user_google():
+    if not request.is_json:
+        return jsonify({"error": "El Content-Type debe ser 'application/json'"}), 415
+
+    data = request.get_json()
+
+    name = data.get("name")
+    email = data.get("email")
+    google_id = data.get("google_id")
+
+    if not google_id or not email or not name:
+        return jsonify({"error": "Faltan datos obligatorios (google_id, email o name)."}), 400
+
+    try:
+        connection = connect()
+        if connection is None:
+            return jsonify({"error": "No se pudo conectar a la base de datos."}), 500
+
+        cursor = connection.cursor(dictionary=True)
+
+        # Verificar si el usuario ya existe
+        cursor.execute("SELECT id FROM usuarios WHERE google_id = %s OR email = %s", (google_id, email))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            return jsonify({"message": "El usuario ya está registrado.", "user_id": usuario["id"]}), 200
+
+        # Si no existe, registrarlo
+        default_password = secrets.token_hex(16)
+        insert_user_query = "INSERT INTO usuarios (nombre, email, google_id, contrasena) VALUES (%s, %s, %s, %s)"
+        cursor.execute(insert_user_query, (name, email, google_id, default_password))
+        connection.commit()
+        user_id = cursor.lastrowid
+
+        # Asignar la insignia "Bienvenido"
+        cursor.execute("SELECT id FROM insignias WHERE nombre = %s", ("Bienvenido",))
+        bienvenido = cursor.fetchone()
+
+        if bienvenido:
+            insert_insignia_query = """
+                INSERT INTO insignias_usuario (id_usuario, id_insignia)
+                VALUES (%s, %s)
+            """
+            cursor.execute(insert_insignia_query, (user_id, bienvenido["id"]))
+            connection.commit()
+
+        return jsonify({"message": "Usuario registrado exitosamente con Google.", "user_id": user_id}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+# Ruta para iniciar sesión con app
+@app.route('/login/app', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Se requieren tanto el email como la contraseña."}), 400
+
+    connection = connect()
+    if connection is None:
+        return jsonify({"error": "No se pudo conectar a la base de datos."}), 500
+
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = "SELECT id, email, nombre, contrasena FROM usuarios WHERE email = %s"
+        cursor.execute(query, (email,))
+        usuario = cursor.fetchone()
+
+        if not usuario:
+            return jsonify({"error": "El usuario no está registrado."}), 404
+
+        stored_password_hash = usuario.get('contrasena')
+        if not stored_password_hash:
+            return jsonify({"error": "El usuario no tiene una contraseña registrada."}), 500
+
+        if not check_password(password, stored_password_hash):
+            return jsonify({"error": "Contraseña incorrecta."}), 401
+
+        token = jwt.encode(
+            {
+                "user_id": usuario["id"],
+                "email": usuario["email"],
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=168)
+            },
+            SECRET_KEY,
+            algorithm="HS256"
+        )
+
+        return jsonify({
+            "message": "Inicio de sesión exitoso en API.",
+            "user": {
+                "id": usuario["id"],
+                "name": usuario["nombre"]
+            },
+            "token": token
+        }), 200
+
+    except Exception as e:
+        print(f"Error en login: {e}")
+        return jsonify({"error": "Error interno en el servidor."}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# -------------------------------- API INICIO -----------------------------------------------
+
+
+# ------------------------------ API CALENDARIO ---------------------------------------------
+
+
+# --------------------------------- API CHAT ------------------------------------------------
+
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -162,6 +398,13 @@ def chat():
         return jsonify({"response": bot_response})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ------------------------------- API TU DIA ------------------------------------------------
+
+
+# ------------------------------- API PERFIL ------------------------------------------------
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 4000))
